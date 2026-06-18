@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio — Le CRM des agents immobiliers au Sénégal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #1A2E1A;
+      --stone:     #3D5A3D;
+      --fog:       #7A9A7A;
+      --pearl:     #F7F5F0;
+      --white:     #FFFFFF;
+      --gold:      #D4A017;
+      --gold-lt:   #F0D060;
+      --terracotta:#C75B2A;
+      --terra-lt:  #F5DDD0;
+      --border:    rgba(26,46,26,0.10);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 64px;
+      background: rgba(255,255,255,0.90);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--ink); text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--gold); }
+    .logo .flag { font-size: 1rem; margin-left: 4px; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.875rem; color: var(--stone); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-cta {
+      background: var(--terracotta); color: var(--white);
+      padding: 0.5rem 1.25rem; border-radius: 6px;
+      font-size: 0.875rem; font-weight: 600;
+      text-decoration: none; transition: background .2s;
+    }
+    .nav-cta:hover { background: var(--ink); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 5% 80px;
+      background: var(--pearl);
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 50%, rgba(212,160,23,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 15% 80%, rgba(199,91,42,0.09) 0%, transparent 60%);
+    }
+    /* Motif wax subtil */
+    .hero-pattern {
+      position: absolute; top: 0; right: 0; width: 45%; height: 100%;
+      opacity: 0.04;
+      background-image: repeating-linear-gradient(45deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%),
+                        repeating-linear-gradient(-45deg, var(--terracotta) 0, var(--terracotta) 1px, transparent 0, transparent 50%);
+      background-size: 20px 20px;
+    }
+    .hero-inner {
+      position: relative; max-width: 1200px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--terra-lt); color: var(--terracotta);
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.35rem 0.85rem; border-radius: 20px; margin-bottom: 1.5rem;
+    }
+    .hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--terracotta); border-radius: 50%; }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 700; line-height: 1.15; letter-spacing: -0.02em;
+      color: var(--ink); margin-bottom: 1.25rem;
+    }
+    h1 em { font-style: normal; color: var(--gold); }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--stone); font-weight: 400;
+      max-width: 480px; margin-bottom: 2.5rem; line-height: 1.7;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--terracotta); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 600; text-decoration: none;
+      transition: background .2s, transform .15s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--ink); transform: translateY(-1px); }
+    .btn-secondary {
+      border: 1.5px solid var(--border); color: var(--ink);
+      padding: 0.85rem 2rem; border-radius: 8px;
+      font-size: 0.95rem; font-weight: 500; text-decoration: none;
+      transition: border-color .2s, background .2s;
+      display: inline-block;
+    }
+    .btn-secondary:hover { border-color: var(--ink); background: rgba(26,46,26,0.04); }
+    .hero-stat-row {
+      display: flex; gap: 2rem; margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .hero-stat strong {
+      display: block; font-family: 'Playfair Display', serif;
+      font-size: 1.75rem; font-weight: 700; color: var(--ink);
+    }
+    .hero-stat span { font-size: 0.8rem; color: var(--fog); font-weight: 500; }
+
+    /* DASHBOARD MOCKUP */
+    .dashboard-mock {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 8px 60px rgba(26,46,26,0.15), 0 1px 3px rgba(26,46,26,0.08);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .mock-bar {
+      background: var(--ink); padding: 0.75rem 1.25rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mock-dot:nth-child(1) { background: #FF5F57; }
+    .mock-dot:nth-child(2) { background: #FEBC2E; }
+    .mock-dot:nth-child(3) { background: #28C840; }
+    .mock-title { color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-left: auto; margin-right: auto; }
+    .mock-body { padding: 1.5rem; }
+    .mock-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+    .mock-kpi {
+      background: var(--pearl); border-radius: 10px; padding: 1rem;
+      border: 1px solid var(--border);
+    }
+    .mock-kpi-label { font-size: 0.7rem; color: var(--fog); font-weight: 500; margin-bottom: 0.25rem; }
+    .mock-kpi-val { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--ink); }
+    .mock-kpi-val.green { color: #1C7C74; }
+    .mock-kpi-val.gold { color: var(--gold); }
+    .mock-leads-title { font-size: 0.75rem; font-weight: 600; color: var(--stone); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mock-lead {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+    }
+    .mock-lead:last-child { border-bottom: none; }
+    .mock-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; color: var(--white); flex-shrink: 0;
+    }
+    .mock-lead-info { flex: 1; }
+    .mock-lead-name { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+    .mock-lead-sub { font-size: 0.7rem; color: var(--fog); }
+    .mock-badge {
+      font-size: 0.65rem; font-weight: 600; padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+    }
+    .badge-chaud { background: #FEF3C7; color: #92400E; }
+    .badge-suivi { background: #D4EDEB; color: #1C7C74; }
+    .badge-new { background: var(--terra-lt); color: var(--terracotta); }
+
+    /* SECTIONS */
+    section { padding: 100px 5%; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-eye {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--terracotta); margin-bottom: 0.75rem;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 700; line-height: 1.2; letter-spacing: -0.02em;
+      color: var(--ink); margin-bottom: 1rem;
+    }
+    h2 em { font-style: normal; color: var(--gold); }
+    .section-sub { font-size: 1rem; color: var(--stone); max-width: 520px; }
+
+    /* PORTAILS BAND */
+    .portails-band {
+      background: var(--ink); padding: 18px 5%;
+      display: flex; align-items: center; justify-content: center; gap: 3rem; flex-wrap: wrap;
+    }
+    .portails-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; text-transform: uppercase; }
+    .portail-pill {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7); font-size: 0.8rem; font-weight: 500;
+      padding: 0.3rem 0.9rem; border-radius: 20px;
+    }
+
+    /* FEATURES */
+    .features { background: var(--white); }
+    .features-header { margin-bottom: 4rem; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .feature-card {
+      padding: 2rem; border-radius: 14px;
+      border: 1px solid var(--border);
+      transition: box-shadow .2s, transform .2s;
+    }
+    .feature-card:hover { box-shadow: 0 8px 32px rgba(26,46,26,0.1); transform: translateY(-3px); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .icon-terra { background: var(--terra-lt); }
+    .icon-gold { background: rgba(212,160,23,0.12); }
+    .icon-ink { background: rgba(26,46,26,0.07); }
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 0.5rem;
+    }
+    .feature-card p { font-size: 0.9rem; color: var(--stone); line-height: 1.65; }
+
+    /* HOW */
+    .how { background: var(--pearl); }
+    .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .steps { display: flex; flex-direction: column; gap: 2.5rem; }
+    .step { display: flex; gap: 1.5rem; }
+    .step-num {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 50%; background: var(--terracotta);
+      color: var(--white); font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-body h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.35rem;
+    }
+    .step-body p { font-size: 0.9rem; color: var(--stone); line-height: 1.65; }
+    .timeline-visual {
+      background: var(--white); border-radius: 16px;
+      border: 1px solid var(--border); padding: 2rem;
+      box-shadow: 0 4px 30px rgba(26,46,26,0.08);
+    }
+    .tl-row {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 0; border-bottom: 1px solid var(--border);
+    }
+    .tl-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .dot-gold { background: var(--gold); }
+    .dot-terra { background: var(--terracotta); }
+    .dot-ink { background: var(--ink); }
+    .tl-label { font-size: 0.7rem; color: var(--fog); font-weight: 500; margin-bottom: 0.2rem; }
+    .tl-content { font-size: 0.85rem; color: var(--ink); font-weight: 500; }
+
+    /* PRICING */
+    .pricing { background: var(--white); }
+    .pricing-header { text-align: center; margin-bottom: 4rem; }
+    .pricing-header .section-sub { margin: 0 auto; }
+    .plans { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; max-width: 980px; margin: 0 auto; }
+    .plan {
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 2.25rem 2rem; position: relative;
+      transition: box-shadow .2s;
+    }
+    .plan:hover { box-shadow: 0 8px 40px rgba(26,46,26,0.1); }
+    .plan.featured { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,160,23,0.15); }
+    .plan-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: var(--ink);
+      font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.85rem;
+      border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+    }
+    .plan-name { font-size: 0.8rem; font-weight: 700; color: var(--stone); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
+    .plan-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.1rem; font-weight: 700; color: var(--ink); line-height: 1;
+    }
+    .plan-price sub { font-size: 0.85rem; vertical-align: baseline; color: var(--fog); font-family: 'Inter', sans-serif; font-weight: 400; }
+    .plan-desc { font-size: 0.85rem; color: var(--fog); margin: 0.5rem 0 1.75rem; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+    .plan-features li { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.875rem; color: var(--stone); }
+    .plan-features li::before { content: '✓'; color: var(--terracotta); font-weight: 700; flex-shrink: 0; }
+    .plan-btn {
+      display: block; width: 100%; text-align: center;
+      padding: 0.8rem; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: .2s;
+    }
+    .plan-btn-outline { border: 1.5px solid var(--border); color: var(--ink); }
+    .plan-btn-outline:hover { border-color: var(--ink); background: var(--pearl); }
+    .plan-btn-gold { background: var(--gold); color: var(--ink); }
+    .plan-btn-gold:hover { background: var(--gold-lt); }
+
+    /* TESTIMONIALS */
+    .testimonials { background: var(--ink); }
+    .testimonials h2 { color: var(--white); }
+    .testimonials h2 em { color: var(--gold); }
+    .testimonials .section-eye { color: var(--gold); }
+    .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 3rem; }
+    .testi-card {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 1.75rem;
+    }
+    .testi-quote { font-size: 0.95rem; color: rgba(255,255,255,0.8); line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
+    .testi-author { display: flex; gap: 0.75rem; align-items: center; }
+    .testi-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: var(--white);
+    }
+    .testi-name { font-size: 0.875rem; font-weight: 600; color: var(--white); }
+    .testi-role { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+    .stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 0.75rem; }
+
+    /* CTA */
+    .cta-section {
+      background: linear-gradient(135deg, var(--terracotta) 0%, #8B3A15 100%);
+      padding: 100px 5%; text-align: center;
+    }
+    .cta-section h2 { color: var(--white); }
+    .cta-section h2 em { color: var(--gold-lt); }
+    .cta-section .section-sub { color: rgba(255,255,255,0.8); margin: 0 auto 2.5rem; max-width: 480px; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-white { background: var(--white); color: var(--terracotta); padding: 0.9rem 2.25rem; border-radius: 8px; font-size: 0.95rem; font-weight: 700; text-decoration: none; transition: .2s; }
+    .btn-white:hover { background: var(--pearl); }
+    .btn-ghost-white { border: 1.5px solid rgba(255,255,255,0.5); color: var(--white); padding: 0.9rem 2.25rem; border-radius: 8px; font-size: 0.95rem; font-weight: 500; text-decoration: none; transition: .2s; }
+    .btn-ghost-white:hover { border-color: var(--white); background: rgba(255,255,255,0.1); }
+
+    /* FOOTER */
+    footer {
+      background: var(--ink); padding: 60px 5% 40px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; }
+    .footer-brand .logo { color: var(--white); display: block; margin-bottom: 0.75rem; }
+    .footer-brand p { font-size: 0.85rem; color: rgba(255,255,255,0.4); line-height: 1.65; max-width: 240px; }
+    .footer-col h5 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 1rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-col a { font-size: 0.875rem; color: rgba(255,255,255,0.55); text-decoration: none; transition: color .2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { max-width: 1200px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .footer-bottom p { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .hero-inner, .how-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .features-grid, .plans, .testi-grid { grid-template-columns: 1fr 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+      .portails-band { gap: 1rem; }
+    }
+    @media (max-width: 580px) {
+      .features-grid, .plans, .testi-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .hero-stat-row { flex-direction: column; gap: 1rem; }
+      .mock-kpis { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Prop<span>lio</span><span class="flag">🇸🇳</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#how">Comment ça marche</a></li>
+    <li><a href="#pricing">Tarifs</a></li>
+  </ul>
+  <a href="#pricing" class="nav-cta">Essai gratuit 14 jours</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">CRM Immobilier · Sénégal</div>
+      <h1>Vendez plus vite,<br/>de Dakar à<br/><em>Saint-Louis</em></h1>
+      <p class="hero-sub">Proplio centralise vos mandats, vos clients et votre pipeline dans un seul outil pensé pour le marché sénégalais. Moins de papier, plus de transactions.</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn-primary">Commencer gratuitement</a>
+        <a href="#how" class="btn-secondary">Voir la démo →</a>
+      </div>
+      <div class="hero-stat-row">
+        <div class="hero-stat">
+          <strong>+41%</strong>
+          <span>de mandats signés en moyenne</span>
+        </div>
+        <div class="hero-stat">
+          <strong>4h</strong>
+          <span>économisées par semaine</span>
+        </div>
+        <div class="hero-stat">
+          <strong>300+</strong>
+          <span>agents actifs au Sénégal</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="dashboard-mock">
+        <div class="mock-bar">
+          <div class="mock-dot"></div>
+          <div class="mock-dot"></div>
+          <div class="mock-dot"></div>
+          <span class="mock-title">Proplio — Tableau de bord</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-kpis">
+            <div class="mock-kpi">
+              <div class="mock-kpi-label">Mandats actifs</div>
+              <div class="mock-kpi-val">11</div>
+            </div>
+            <div class="mock-kpi">
+              <div class="mock-kpi-label">CA ce mois</div>
+              <div class="mock-kpi-val gold">14,5M</div>
+            </div>
+            <div class="mock-kpi">
+              <div class="mock-kpi-label">Visites planif.</div>
+              <div class="mock-kpi-val green">7</div>
+            </div>
+          </div>
+          <div class="mock-leads-title">Contacts récents</div>
+          <div class="mock-lead">
+            <div class="mock-avatar" style="background:#C75B2A">AD</div>
+            <div class="mock-lead-info">
+              <div class="mock-lead-name">Aminata Diallo</div>
+              <div class="mock-lead-sub">Budget 45M FCFA · Villa Almadies</div>
+            </div>
+            <span class="mock-badge badge-chaud">Chaud 🔥</span>
+          </div>
+          <div class="mock-lead">
+            <div class="mock-avatar" style="background:#D4A017">MS</div>
+            <div class="mock-lead-info">
+              <div class="mock-lead-name">Moussa Sow</div>
+              <div class="mock-lead-sub">Vendeur · Parcelles Assainies, Dakar</div>
+            </div>
+            <span class="mock-badge badge-suivi">En suivi ✓</span>
+          </div>
+          <div class="mock-lead">
+            <div class="mock-avatar" style="background:#1A6B5A">FN</div>
+            <div class="mock-lead-info">
+              <div class="mock-lead-name">Fatou Ndiaye</div>
+              <div class="mock-lead-sub">Invest. · Terrain Thiès · 12M FCFA</div>
+            </div>
+            <span class="mock-badge badge-new">Nouveau</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTAILS BAND -->
+<div class="portails-band">
+  <span class="portails-label">Synchronisé avec</span>
+  <span class="portail-pill">Expat-Dakar</span>
+  <span class="portail-pill">Senegimmo</span>
+  <span class="portail-pill">Jumia House SN</span>
+  <span class="portail-pill">Immo Sénégal</span>
+  <span class="portail-pill">Dakimmo</span>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-inner">
+    <div class="features-header">
+      <div class="section-eye">Fonctionnalités</div>
+      <h2>Conçu pour le terrain<br/><em>sénégalais</em></h2>
+      <p class="section-sub">Des villas des Almadies aux terrains de Thiès — Proplio s'adapte à votre réalité de terrain.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon icon-terra">🏡</div>
+        <h3>Mandats locaux</h3>
+        <p>Gérez vos biens selon les types du marché sénégalais : villas, appartements, terrains nus, R+1, cours communes. Avec photos, titres fonciers et documents joints.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-gold">👥</div>
+        <h3>CRM acheteurs & vendeurs</h3>
+        <p>Qualifiez vos contacts, notez leurs critères (budget en FCFA, quartier, type de bien) et ne ratez plus aucune relance grâce aux rappels automatiques.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-ink">📊</div>
+        <h3>Pipeline de ventes</h3>
+        <p>De la prospection à l'acte notarial — suivez chaque dossier étape par étape. Identifiez les blocages et relancez au bon moment.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-terra">📲</div>
+        <h3>Mobile-first</h3>
+        <p>Saisie rapide sur smartphone depuis une visite ou un salon. Application légère optimisée pour les connexions sénégalaises, même en 3G.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-gold">🤖</div>
+        <h3>Matching automatique</h3>
+        <p>Nouveau mandat à Ngor ? Proplio alerte immédiatement tous vos acheteurs qui cherchent dans ce secteur. Zéro oubli, réactivité maximale.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-ink">📈</div>
+        <h3>Reporting en FCFA</h3>
+        <p>CA mensuel, commissions perçues, taux de transformation — tous vos chiffres en francs CFA, avec exports PDF pour votre comptable.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-inner">
+    <div class="how-grid">
+      <div>
+        <div class="section-eye">Comment ça marche</div>
+        <h2>Opérationnel<br/><em>en 15 minutes</em></h2>
+        <p class="section-sub" style="margin-bottom:3rem">Pas de formation complexe. Vous importez vos contacts et vous démarrez immédiatement.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Créez votre compte</h4>
+              <p>Inscription gratuite en 2 minutes. Importez vos contacts depuis Excel ou votre carnet de contacts WhatsApp.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Ajoutez vos biens & clients</h4>
+              <p>Renseignez vos mandats avec photos et prix en FCFA. Proplio crée les matchings automatiquement avec vos acheteurs.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Vendez plus rapidement</h4>
+              <p>Suivez chaque transaction, relancez au bon moment, et publiez sur Expat-Dakar ou Senegimmo en un clic.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-visual">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--stone);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:1.25rem;">Activité en temps réel</div>
+        <div class="tl-row">
+          <div class="tl-dot dot-gold"></div>
+          <div>
+            <div class="tl-label">Il y a 5 min</div>
+            <div class="tl-content">Nouveau contact — Ibrahima B. cherche villa à Ngor · 60M FCFA</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-dot dot-terra"></div>
+          <div>
+            <div class="tl-label">Il y a 32 min</div>
+            <div class="tl-content">Offre acceptée — Villa Almadies 4 ch · 78 000 000 FCFA</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-dot dot-ink"></div>
+          <div>
+            <div class="tl-label">Il y a 2h</div>
+            <div class="tl-content">Rappel envoyé à Moussa S. pour signature du compromis</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-dot dot-gold"></div>
+          <div>
+            <div class="tl-label">Hier, 14h20</div>
+            <div class="tl-content">Matching — 4 acheteurs correspondent au terrain Thiès Keur Gallo</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-dot dot-terra"></div>
+          <div>
+            <div class="tl-label">Hier, 09h00</div>
+            <div class="tl-content">Acte notarié signé — Appartement Plateau · Commission 900 000 FCFA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-inner">
+    <div class="pricing-header">
+      <div class="section-eye">Tarifs</div>
+      <h2>Simple, <em>transparent</em>, sans surprise</h2>
+      <p class="section-sub">14 jours d'essai gratuit. Aucune carte bancaire requise. Paiement possible par Orange Money ou Wave.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Solo</div>
+        <div class="plan-price">29 000<sub> FCFA/mois</sub></div>
+        <p class="plan-desc">Pour l'agent indépendant qui démarre.</p>
+        <ul class="plan-features">
+          <li>Jusqu'à 30 mandats actifs</li>
+          <li>300 contacts CRM</li>
+          <li>Agenda & rappels</li>
+          <li>Pipeline de ventes</li>
+          <li>Support WhatsApp</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-outline">Commencer gratuitement</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">⭐ Le plus choisi</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">59 000<sub> FCFA/mois</sub></div>
+        <p class="plan-desc">Pour l'agent qui veut scaler son business.</p>
+        <ul class="plan-features">
+          <li>Mandats illimités</li>
+          <li>Contacts illimités</li>
+          <li>Matching automatique</li>
+          <li>Reporting avancé en FCFA</li>
+          <li>Publication Expat-Dakar, Senegimmo…</li>
+          <li>Support prioritaire WhatsApp</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-gold">Commencer gratuitement</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Agence</div>
+        <div class="plan-price">129 000<sub> FCFA/mois</sub></div>
+        <p class="plan-desc">Pour les agences multi-agents à Dakar et régions.</p>
+        <ul class="plan-features">
+          <li>Jusqu'à 10 agents inclus</li>
+          <li>Tableau de bord directeur</li>
+          <li>Gestion d'équipe & rôles</li>
+          <li>API & intégrations</li>
+          <li>Formation sur site (Dakar)</li>
+          <li>Gestionnaire de compte dédié</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-outline">Contacter l'équipe</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:2rem;font-size:0.85rem;color:var(--fog);">Paiement accepté : Orange Money · Wave · Carte bancaire · Virement</p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-inner">
+    <div class="section-eye">Témoignages</div>
+    <h2>Ils vendent mieux.<br/><em>Ils ne reviennent pas en arrière.</em></h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-quote">«&nbsp;Depuis que j'utilise Proplio, je ne perds plus aucun contact. Le matching m'a permis de vendre un terrain à Thiès en 3 jours — des acheteurs que j'avais oublié de rappeler.&nbsp;»</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#C75B2A">AD</div>
+          <div>
+            <div class="testi-name">Amadou Diop</div>
+            <div class="testi-role">Agent indépendant · Dakar, Plateau</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-quote">«&nbsp;Le fait de pouvoir publier directement sur Expat-Dakar depuis l'application me fait gagner un temps fou. Et le suivi des dossiers est impeccable.&nbsp;»</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#D4A017">RN</div>
+          <div>
+            <div class="testi-name">Rokhaya Ndiaye</div>
+            <div class="testi-role">Négociatrice immobilière · Almadies</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-quote">«&nbsp;Mon équipe de 5 agents sur Dakar et Thiès utilise le plan Agence. Le tableau de bord directeur me donne une visibilité totale. Bluffant.&nbsp;»</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#1A6B5A">MB</div>
+          <div>
+            <div class="testi-name">Mamadou Ba</div>
+            <div class="testi-role">Directeur d'agence · Dakar & Thiès</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-inner">
+    <h2>Prêt à transformer<br/><em>votre activité&nbsp;?</em></h2>
+    <p class="section-sub">Rejoignez les agents immobiliers sénégalais qui pilotent leur business avec Proplio. 14 jours gratuits, sans engagement.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-white">Démarrer gratuitement</a>
+      <a href="#" class="btn-ghost-white">Nous contacter sur WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">Prop<span>lio</span> 🇸🇳</a>
+      <p>Le CRM immobilier conçu pour les professionnels de l'immobilier au Sénégal.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Produit</h5>
+      <ul>
+        <li><a href="#">Fonctionnalités</a></li>
+        <li><a href="#">Tarifs</a></li>
+        <li><a href="#">Intégrations</a></li>
+        <li><a href="#">Nouveautés</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Ressources</h5>
+      <ul>
+        <li><a href="#">Guide de démarrage</a></li>
+        <li><a href="#">Blog immobilier SN</a></li>
+        <li><a href="#">Support WhatsApp</a></li>
+        <li><a href="#">Tutoriels vidéo</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="#">À propos</a></li>
+        <li><a href="#">Dakar — Plateau</a></li>
+        <li><a href="#">WhatsApp +221 …</a></li>
+        <li><a href="#">contact@proplio.sn</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Proplio Sénégal. Tous droits réservés.</p>
+    <p>Fait avec ❤️ à Dakar pour les agents immobiliers sénégalais</p>
+  </div>
+</footer>
+
+</body>
+</html>
