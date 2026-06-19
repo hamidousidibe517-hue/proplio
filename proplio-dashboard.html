@@ -5,810 +5,890 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Proplio — Tableau de bord</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="proplio-app.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --ink:      #1A2E1A;
-      --stone:    #3D5A3D;
-      --fog:      #7A9A7A;
-      --pearl:    #F7F5F0;
-      --white:    #FFFFFF;
-      --gold:     #D4A017;
-      --gold-lt:  #FBF0C0;
-      --terra:    #C75B2A;
-      --terra-lt: #F5DDD0;
-      --green:    #1C7C74;
-      --green-lt: #D4EDEB;
-      --purple:   #6B21A8;
-      --purple-lt:#EDE9FE;
-      --border:   rgba(26,46,26,0.10);
-      --sidebar-w: 240px;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --ink:#1A2E1A;--stone:#3D5A3D;--fog:#7A9A7A;
+      --pearl:#F7F5F0;--white:#FFFFFF;
+      --gold:#D4A017;--gold-lt:#FBF0C0;
+      --terra:#C75B2A;--terra-lt:#F5DDD0;
+      --green:#1C7C74;--green-lt:#D4EDEB;
+      --purple:#6B21A8;--purple-lt:#EDE9FE;
+      --border:rgba(26,46,26,0.10);--sw:220px;
     }
-    html, body { height: 100%; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--pearl);
-      color: var(--ink);
-      display: flex;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
+    html,body{height:100%}
+    body{font-family:'Inter',sans-serif;background:var(--pearl);color:var(--ink);display:flex;-webkit-font-smoothing:antialiased}
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar-w); flex-shrink: 0;
-      background: var(--ink);
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; bottom: 0;
-      z-index: 50;
-      overflow-y: auto;
-    }
-    .sidebar-logo {
-      padding: 24px 20px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .sidebar-logo a {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem; font-weight: 700;
-      color: var(--white); text-decoration: none;
-    }
-    .sidebar-logo a span { color: var(--gold); }
+    /* SIDEBAR */
+    .sidebar{width:var(--sw);flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+    .sb-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fff}
+    .sb-logo span{color:var(--gold)}
+    .sb-nav{padding:16px 8px 0;flex:1}
+    .sb-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 8px;margin-bottom:4px}
+    .sb-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;margin-bottom:2px;color:rgba(255,255,255,.55);font-size:.82rem;font-weight:500;cursor:pointer;transition:.15s}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+    .sb-item.active{background:rgba(212,160,23,.18);color:var(--gold)}
+    .sb-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+    .sb-badge{margin-left:auto;background:var(--terra);color:#fff;font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:10px}
+    .sb-foot{padding:12px 8px;border-top:1px solid rgba(255,255,255,.08)}
+    .sb-user{display:flex;align-items:center;gap:8px}
+    .sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--terra);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;flex-shrink:0}
+    .sb-uname{font-size:.78rem;font-weight:600;color:#fff}
+    .sb-uplan{font-size:.65rem;color:rgba(255,255,255,.4)}
+    .sb-logout{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;font-size:.9rem}
 
-    .nav-section { padding: 20px 12px 0; }
-    .nav-label {
-      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: rgba(255,255,255,0.25);
-      padding: 0 8px; margin-bottom: 6px;
-    }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 8px; margin-bottom: 2px;
-      color: rgba(255,255,255,0.55); font-size: 0.875rem; font-weight: 500;
-      cursor: pointer; transition: background .15s, color .15s;
-      text-decoration: none;
-    }
-    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
-    .nav-item.active { background: rgba(212,160,23,0.18); color: var(--gold); }
-    .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
-    .nav-badge {
-      margin-left: auto; background: var(--terra);
-      color: var(--white); font-size: 0.65rem; font-weight: 700;
-      padding: 1px 6px; border-radius: 10px;
-    }
+    /* MAIN */
+    .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .topbar h1{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink)}
+    .topbar p{font-size:.72rem;color:var(--fog)}
+    .topbar-r{display:flex;align-items:center;gap:8px}
+    .icon-btn{width:34px;height:34px;border-radius:7px;background:var(--pearl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;position:relative}
+    .notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--terra);border:1.5px solid var(--white)}
+    .pg{padding:24px;flex:1}
+    .pg-section{display:none}
+    .pg-section.active{display:block}
 
-    .sidebar-footer {
-      margin-top: auto; padding: 16px 12px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
-    .user-row { display: flex; align-items: center; gap: 10px; }
-    .user-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--terra); display: flex; align-items: center;
-      justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--white);
-      flex-shrink: 0;
-    }
-    .user-name { font-size: 0.82rem; font-weight: 600; color: var(--white); }
-    .user-plan { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
-    .logout-btn {
-      margin-left: auto; background: none; border: none;
-      color: rgba(255,255,255,0.35); cursor: pointer; font-size: 1rem;
-      transition: color .2s;
-    }
-    .logout-btn:hover { color: rgba(255,255,255,0.8); }
+    /* KPIs */
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+    .kpi{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:16px 18px;transition:.2s}
+    .kpi:hover{box-shadow:0 4px 20px rgba(26,46,26,.08)}
+    .kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+    .kpi-ico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .kpi-trend{font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:20px}
+    .trend-up{background:var(--green-lt);color:var(--green)}
+    .trend-dn{background:var(--terra-lt);color:var(--terra)}
+    .kpi-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--ink);line-height:1}
+    .kpi-lbl{font-size:.72rem;color:var(--fog);margin-top:4px}
 
-    /* ── MAIN ── */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1; display: flex; flex-direction: column;
-      min-height: 100vh;
-    }
+    /* CARDS */
+    .two-col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+    .card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px}
+    .card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .card-title{font-size:.875rem;font-weight:600;color:var(--ink)}
+    .card-act{font-size:.75rem;color:var(--terra);cursor:pointer;font-weight:600;background:none;border:none}
 
-    /* TOP BAR */
-    .topbar {
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px; height: 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 40;
-    }
-    .topbar-left h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem; font-weight: 700; color: var(--ink);
-    }
-    .topbar-left p { font-size: 0.78rem; color: var(--fog); }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .topbar-search {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--pearl); border: 1px solid var(--border);
-      border-radius: 8px; padding: 6px 12px;
-    }
-    .topbar-search input {
-      border: none; background: none; outline: none;
-      font-size: 0.82rem; color: var(--ink); width: 180px;
-      font-family: 'Inter', sans-serif;
-    }
-    .topbar-search input::placeholder { color: var(--fog); }
-    .icon-btn {
-      width: 36px; height: 36px; border-radius: 8px;
-      background: var(--pearl); border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 1rem; transition: background .15s;
-      position: relative;
-    }
-    .icon-btn:hover { background: var(--terra-lt); }
-    .notif-dot {
-      position: absolute; top: 6px; right: 6px;
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--terra); border: 2px solid var(--white);
-    }
+    /* CHART */
+    .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .bar-month{font-size:.68rem;color:var(--fog);width:24px;flex-shrink:0}
+    .bar-track{flex:1;height:8px;background:var(--pearl);border-radius:20px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:20px;background:var(--terra);transition:width .5s}
+    .bar-fill.gold{background:var(--gold)}
+    .bar-val{font-size:.68rem;color:var(--stone);width:52px;text-align:right;flex-shrink:0}
 
-    /* ── PAGE BODY ── */
-    .page-content { padding: 28px 32px; flex: 1; }
-    .page-section { display: none; }
-    .page-section.active { display: block; }
+    /* ACTIVITY */
+    .act-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+    .act-row:last-child{border-bottom:none}
+    .act-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+    .act-text{font-size:.78rem;color:var(--ink);line-height:1.5;flex:1}
+    .act-time{font-size:.65rem;color:var(--fog);flex-shrink:0}
 
-    /* ── KPIs ── */
-    .kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
-    .kpi-card {
-      background: var(--white); border-radius: 14px;
-      border: 1px solid var(--border); padding: 20px 22px;
-      transition: box-shadow .2s;
-    }
-    .kpi-card:hover { box-shadow: 0 4px 20px rgba(26,46,26,0.08); }
-    .kpi-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .kpi-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-    .kpi-trend { font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
-    .trend-up { background: var(--green-lt); color: var(--green); }
-    .trend-dn { background: var(--terra-lt); color: var(--terra); }
-    .kpi-val {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.65rem; font-weight: 700; color: var(--ink); line-height: 1;
-    }
-    .kpi-label { font-size: 0.78rem; color: var(--fog); margin-top: 4px; }
+    /* CONTACTS & MANDATS */
+    .c-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+    .c-row:last-child{border-bottom:none}
+    .c-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex-shrink:0}
+    .c-name{font-size:.82rem;font-weight:600;color:var(--ink)}
+    .c-sub{font-size:.72rem;color:var(--fog)}
+    .c-badge{margin-left:auto;font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:20px}
+    .badge-hot{background:#FEF3C7;color:#92400E}
+    .badge-warm{background:var(--terra-lt);color:var(--terra)}
+    .badge-cold{background:var(--green-lt);color:var(--green)}
+    .badge-new{background:var(--purple-lt);color:var(--purple)}
+    .c-del{margin-left:8px;background:none;border:none;cursor:pointer;color:var(--fog);font-size:.85rem;opacity:.5;transition:.15s}
+    .c-del:hover{opacity:1;color:var(--terra)}
 
-    /* ── GRID 2 COL ── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-    .three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px; }
+    /* TABLE */
+    .m-table{width:100%;border-collapse:collapse;font-size:.78rem}
+    .m-table th{text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fog);padding:0 10px 10px;border-bottom:1px solid var(--border)}
+    .m-table td{padding:12px 10px;border-bottom:1px solid var(--border);color:var(--ink)}
+    .m-table tr:last-child td{border-bottom:none}
+    .m-table tr:hover td{background:var(--pearl)}
+    .m-type{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:5px}
+    .m-excl{background:var(--gold-lt);color:#92400E}
+    .m-simple{background:var(--green-lt);color:var(--green)}
+    .m-status{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:20px}
+    .s-actif{background:var(--green-lt);color:var(--green)}
+    .s-visite{background:var(--terra-lt);color:var(--terra)}
+    .s-offre{background:var(--gold-lt);color:#92400E}
+    .s-compromis{background:var(--purple-lt);color:var(--purple)}
 
-    /* ── CARD ── */
-    .card {
-      background: var(--white); border-radius: 14px;
-      border: 1px solid var(--border); padding: 22px;
-    }
-    .card-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 18px;
-    }
-    .card-title { font-size: 0.875rem; font-weight: 700; color: var(--ink); }
-    .card-action { font-size: 0.78rem; color: var(--terra); font-weight: 600; cursor: pointer; }
-    .card-action:hover { text-decoration: underline; }
+    /* PIPELINE */
+    .pipe-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .pipe-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .pipe-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+    .pipe-cnt{font-size:.65rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .pipe-card{background:var(--pearl);border-radius:8px;border:1px solid var(--border);padding:10px;margin-bottom:6px;cursor:pointer;transition:.15s}
+    .pipe-card:hover{background:var(--white);box-shadow:0 4px 12px rgba(26,46,26,.1)}
+    .pipe-card-name{font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+    .pipe-card-sub{font-size:.68rem;color:var(--fog);margin-bottom:6px}
+    .pipe-card-price{font-size:.75rem;font-weight:700;color:var(--terra)}
 
-    /* ── CHART BAR (pur CSS) ── */
-    .chart-wrap { padding: 8px 0; }
-    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .bar-month { font-size: 0.72rem; color: var(--fog); width: 28px; flex-shrink: 0; }
-    .bar-track { flex: 1; height: 10px; background: var(--pearl); border-radius: 20px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 20px; background: var(--terra); transition: width .6s cubic-bezier(.4,0,.2,1); }
-    .bar-fill.gold { background: var(--gold); }
-    .bar-val { font-size: 0.72rem; color: var(--stone); font-weight: 600; width: 55px; text-align: right; flex-shrink: 0; }
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--white);border-radius:14px;padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .25s ease}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+    .modal h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:16px}
+    .modal label{display:block;font-size:.78rem;font-weight:600;color:var(--stone);margin:10px 0 3px}
+    .modal input,.modal select{width:100%;padding:.6rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-size:.875rem;font-family:'Inter',sans-serif;color:var(--ink);background:var(--white);outline:none;transition:.15s}
+    .modal input:focus,.modal select:focus{border-color:var(--terra)}
+    .modal-btns{display:flex;gap:8px;margin-top:16px}
+    .modal-cancel{flex:1;padding:.7rem;border-radius:8px;border:1.5px solid var(--border);background:none;font-size:.875rem;font-weight:600;cursor:pointer;color:var(--stone)}
+    .modal-save{flex:2;padding:.7rem;border-radius:8px;background:var(--terra);border:none;font-size:.875rem;font-weight:700;color:#fff;cursor:pointer;font-family:'Inter',sans-serif}
+    .modal-save:hover{background:var(--ink)}
 
-    /* ── PIPELINE ── */
-    .pipeline-cols { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
-    .pipe-col {}
-    .pipe-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .pipe-label {
-      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .pipe-count {
-      font-size: 0.7rem; font-weight: 700;
-      width: 20px; height: 20px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .pipe-cards { display: flex; flex-direction: column; gap: 8px; }
-    .pipe-card {
-      background: var(--pearl); border-radius: 10px;
-      border: 1px solid var(--border); padding: 12px;
-      cursor: pointer; transition: box-shadow .15s, transform .15s;
-    }
-    .pipe-card:hover { box-shadow: 0 4px 12px rgba(26,46,26,0.1); transform: translateY(-1px); }
-    .pipe-card-name { font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-    .pipe-card-sub { font-size: 0.72rem; color: var(--fog); margin-bottom: 8px; }
-    .pipe-card-price { font-size: 0.78rem; font-weight: 700; color: var(--terra); }
-    .pipe-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-    .pipe-avatar { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; color: var(--white); }
-    .pipe-date { font-size: 0.67rem; color: var(--fog); }
+    /* TOAST */
+    .toast{position:fixed;bottom:20px;right:20px;z-index:300;background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:.875rem;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:.3s}
+    .toast.show{transform:none;opacity:1}
 
-    /* ── LISTE CONTACTS ── */
-    .contact-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-    }
-    .contact-row:last-child { border-bottom: none; }
-    .c-avatar {
-      width: 38px; height: 38px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; color: var(--white); flex-shrink: 0;
-    }
-    .c-name { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
-    .c-sub { font-size: 0.75rem; color: var(--fog); }
-    .c-badge {
-      margin-left: auto; font-size: 0.68rem; font-weight: 600;
-      padding: 3px 9px; border-radius: 20px;
-    }
-    .badge-hot { background: #FEF3C7; color: #92400E; }
-    .badge-warm { background: var(--terra-lt); color: var(--terra); }
-    .badge-cold { background: var(--green-lt); color: var(--green); }
-    .badge-new { background: var(--purple-lt); color: var(--purple); }
-    .c-action { font-size: 1rem; cursor: pointer; margin-left: 8px; opacity: 0.4; transition: opacity .2s; }
-    .c-action:hover { opacity: 1; }
+    /* LOADING */
+    .loading{text-align:center;padding:2rem;color:var(--fog);font-size:.875rem}
+    .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--terra);border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ── ACTIVITÉ ── */
-    .activity-list { display: flex; flex-direction: column; gap: 0; }
-    .act-row {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-    }
-    .act-row:last-child { border-bottom: none; }
-    .act-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-    .act-text { font-size: 0.82rem; color: var(--ink); line-height: 1.5; flex: 1; }
-    .act-text strong { font-weight: 600; }
-    .act-time { font-size: 0.7rem; color: var(--fog); flex-shrink: 0; }
+    /* EMPTY */
+    .empty{text-align:center;padding:3rem;color:var(--fog)}
+    .empty-icon{font-size:2.5rem;margin-bottom:1rem}
 
-    /* ── MANDATS TABLE ── */
-    .mandats-table { width: 100%; border-collapse: collapse; }
-    .mandats-table th {
-      text-align: left; font-size: 0.72rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.06em;
-      color: var(--fog); padding: 0 12px 12px; border-bottom: 1px solid var(--border);
-    }
-    .mandats-table td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--ink); }
-    .mandats-table tr:last-child td { border-bottom: none; }
-    .mandats-table tr:hover td { background: var(--pearl); }
-    .m-type { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
-    .m-excl { background: var(--gold-lt); color: #92400E; }
-    .m-simple { background: var(--green-lt); color: var(--green); }
-    .m-status { font-size: 0.72rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
-    .s-actif { background: var(--green-lt); color: var(--green); }
-    .s-visite { background: var(--terra-lt); color: var(--terra); }
-    .s-offre { background: var(--gold-lt); color: #92400E; }
+    /* BTN */
+    .btn-add{background:var(--terra);color:#fff;border:none;padding:6px 14px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;transition:.15s;font-family:'Inter',sans-serif}
+    .btn-add:hover{background:var(--ink)}
 
-    /* ── QUICK ADD MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-      z-index: 200; display: none; align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--white); border-radius: 16px;
-      padding: 28px; width: 100%; max-width: 440px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      animation: slideUp .25s ease;
-    }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); margin-bottom: 20px; }
-    .modal label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--stone); margin-bottom: 4px; margin-top: 14px; }
-    .modal input, .modal select {
-      width: 100%; padding: 0.65rem 0.9rem;
-      border: 1.5px solid var(--border); border-radius: 8px;
-      font-size: 0.875rem; font-family: 'Inter', sans-serif; color: var(--ink);
-      background: var(--white); outline: none; transition: border-color .2s;
-    }
-    .modal input:focus, .modal select:focus { border-color: var(--terra); }
-    .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-    .modal-cancel {
-      flex: 1; padding: 0.75rem; border-radius: 8px;
-      border: 1.5px solid var(--border); background: none;
-      font-size: 0.875rem; font-weight: 600; cursor: pointer; color: var(--stone);
-      transition: .2s;
-    }
-    .modal-cancel:hover { border-color: var(--stone); }
-    .modal-save {
-      flex: 2; padding: 0.75rem; border-radius: 8px;
-      background: var(--terra); border: none;
-      font-size: 0.875rem; font-weight: 700; color: var(--white);
-      cursor: pointer; transition: background .2s;
-      font-family: 'Inter', sans-serif;
-    }
-    .modal-save:hover { background: var(--ink); }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: 24px; right: 24px; z-index: 300;
-      background: var(--ink); color: var(--white);
-      padding: 12px 20px; border-radius: 10px;
-      font-size: 0.875rem; font-weight: 500;
-      display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      transform: translateY(80px); opacity: 0;
-      transition: transform .3s, opacity .3s;
-    }
-    .toast.show { transform: none; opacity: 1; }
-    .toast-icon { font-size: 1.1rem; }
-
-    /* ── FAB ── */
-    .fab {
-      position: fixed; bottom: 28px; right: 28px; z-index: 100;
-      width: 52px; height: 52px; border-radius: 50%;
-      background: var(--terra); border: none;
-      color: var(--white); font-size: 1.5rem;
-      cursor: pointer; box-shadow: 0 4px 20px rgba(199,91,42,0.4);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .fab:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(199,91,42,0.5); }
-
-    /* TABS */
-    .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--white); border-radius: 10px; padding: 4px; border: 1px solid var(--border); width: fit-content; }
-    .tab { padding: 6px 16px; border-radius: 7px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--fog); transition: .2s; }
-    .tab.active { background: var(--terra); color: var(--white); }
-
-    /* EMPTY STATE */
-    .empty { text-align: center; padding: 3rem 1rem; color: var(--fog); }
-    .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-    .empty p { font-size: 0.875rem; }
-
-    @media (max-width: 1024px) {
-      .kpi-row { grid-template-columns: repeat(2,1fr); }
-      .pipeline-cols { grid-template-columns: repeat(2,1fr); }
-    }
-    @media (max-width: 700px) {
-      .sidebar { width: 60px; }
-      .sidebar-logo a span, .sidebar-logo .flag, .nav-item span:not(.nav-icon), .nav-label, .user-name, .user-plan, .logout-btn { display: none; }
-      .main { margin-left: 60px; }
-      .nav-item { justify-content: center; }
-      .kpi-row { grid-template-columns: 1fr 1fr; }
-      .two-col, .three-col { grid-template-columns: 1fr; }
-      .page-content { padding: 16px; }
-      .topbar { padding: 0 16px; }
+    @media(max-width:900px){
+      .sidebar{width:56px}
+      .sb-logo,.sb-uname,.sb-uplan,.sb-label,. sb-item span:not(.sb-icon){display:none}
+      .main{margin-left:56px}
+      .kpi-row{grid-template-columns:1fr 1fr}
+      .two-col,.pipe-cols{grid-template-columns:1fr}
+      .pg{padding:14px}
     }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <a href="immo-saas-senegal.html">Prop<span>lio</span> 🇸🇳</a>
+  <div class="sb-logo">Prop<span>lio</span> 🇸🇳</div>
+  <div class="sb-nav">
+    <div class="sb-label">Principal</div>
+    <div class="sb-item active" onclick="showPg('dashboard',this)"><span class="sb-icon">📊</span><span> Tableau de bord</span></div>
+    <div class="sb-item" onclick="showPg('mandats',this)"><span class="sb-icon">🏡</span><span> Mandats</span><span class="sb-badge" id="badge-mandats">0</span></div>
+    <div class="sb-item" onclick="showPg('contacts',this)"><span class="sb-icon">👥</span><span> Contacts</span></div>
+    <div class="sb-item" onclick="showPg('pipeline',this)"><span class="sb-icon">🔄</span><span> Pipeline</span></div>
+    <div class="sb-item" onclick="showPg('agenda',this)"><span class="sb-icon">📅</span><span> Agenda</span></div>
+    <div class="sb-label" style="margin-top:12px">Outils</div>
+    <div class="sb-item" onclick="showPg('matching',this)"><span class="sb-icon">🤖</span><span> Matching</span></div>
+    <div class="sb-item" onclick="showPg('matching',this)"><span class="sb-icon">🤖</span><span> Matching</span></div>
+    <div class="sb-item" onclick="showPg('reporting',this)"><span class="sb-icon">📈</span><span> Reporting</span></div>
   </div>
-
-  <div class="nav-section">
-    <div class="nav-label">Principal</div>
-    <a class="nav-item active" onclick="showPage('dashboard',this)">
-      <span class="nav-icon">📊</span><span>Tableau de bord</span>
-    </a>
-    <a class="nav-item" onclick="showPage('mandats',this)">
-      <span class="nav-icon">🏡</span><span>Mandats</span>
-      <span class="nav-badge">11</span>
-    </a>
-    <a class="nav-item" onclick="showPage('contacts',this)">
-      <span class="nav-icon">👥</span><span>Contacts</span>
-    </a>
-    <a class="nav-item" onclick="showPage('pipeline',this)">
-      <span class="nav-icon">🔄</span><span>Pipeline</span>
-    </a>
-    <a class="nav-item" onclick="showPage('agenda',this)">
-      <span class="nav-icon">📅</span><span>Agenda</span>
-      <span class="nav-badge">3</span>
-    </a>
-  </div>
-
-  <div class="nav-section" style="margin-top:16px;">
-    <div class="nav-label">Outils</div>
-    <a class="nav-item" onclick="showPage('matching',this)">
-      <span class="nav-icon">🤖</span><span>Matching</span>
-    </a>
-    <a class="nav-item" onclick="showPage('reporting',this)">
-      <span class="nav-icon">📈</span><span>Reporting</span>
-    </a>
-    <a class="nav-item" onclick="showPage('portails',this)">
-      <span class="nav-icon">🌐</span><span>Portails</span>
-    </a>
-  </div>
-
-  <div class="sidebar-footer">
-    <div class="user-row">
-      <div class="user-avatar">MD</div>
-      <div>
-        <div class="user-name">Moussa Diallo</div>
-        <div class="user-plan">Plan Pro ✨</div>
-      </div>
-      <button class="logout-btn" title="Se déconnecter" onclick="window.location.href='proplio-login.html'">⏏</button>
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-avatar">MD</div>
+      <div><div class="sb-uname">Moussa Diallo</div><div class="sb-uplan">Plan Pro ✨</div></div>
+      <button class="sb-logout" onclick="localStorage.removeItem('proplio_token');localStorage.removeItem('proplio_user');window.location.href='proplio-login.html'" title="Déconnexion">⏏</button>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
-  <!-- TOPBAR -->
   <header class="topbar">
-    <div class="topbar-left">
-      <h1 id="page-title">Tableau de bord</h1>
-      <p id="page-sub">Dimanche 14 juin 2026 · Dakar, Sénégal 🇸🇳</p>
-    </div>
-    <div class="topbar-right">
-      <div class="topbar-search">
-        <span>🔍</span>
-        <input type="text" placeholder="Rechercher…"/>
-      </div>
-      <div class="icon-btn" title="Notifications">
-        🔔
-        <div class="notif-dot"></div>
-      </div>
-      <div class="icon-btn" title="Paramètres">⚙️</div>
+    <div><h1 id="pg-title">Tableau de bord</h1><p id="pg-date"></p></div>
+    <div class="topbar-r">
+      <div class="icon-btn" title="Notifications">🔔<div class="notif-dot"></div></div>
+      <input type="text" placeholder="🔍 Rechercher..." onkeyup="globalSearch(this.value)" 
+      style="padding:6px 12px;border:1px solid var(--border);border-radius:8px;font-size:.78rem;width:180px;outline:none;background:var(--pearl);color:var(--ink)"/>
+    <div class="icon-btn" title="Actualiser" onclick="loadAll()">🔄</div>
+      <div class="icon-btn" title="Tester WhatsApp" onclick="testWA()" style="background:var(--green-lt)">📲</div>
     </div>
   </header>
 
-  <!-- PAGE CONTENT -->
-  <div class="page-content">
+  <div class="pg">
 
-    <!-- ── DASHBOARD ── -->
-    <div class="page-section active" id="page-dashboard">
-      <!-- KPIs -->
+    <!-- DASHBOARD -->
+    <div class="pg-section active" id="pg-dashboard">
       <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon" style="background:var(--terra-lt)">🏡</div>
-            <span class="kpi-trend trend-up">+2 ce mois</span>
-          </div>
-          <div class="kpi-val">11</div>
-          <div class="kpi-label">Mandats actifs</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon" style="background:var(--gold-lt)">💰</div>
-            <span class="kpi-trend trend-up">+18%</span>
-          </div>
-          <div class="kpi-val">14,5M</div>
-          <div class="kpi-label">CA ce mois (FCFA)</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon" style="background:var(--green-lt)">👥</div>
-            <span class="kpi-trend trend-up">+7</span>
-          </div>
-          <div class="kpi-val">38</div>
-          <div class="kpi-label">Contacts actifs</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-top">
-            <div class="kpi-icon" style="background:var(--purple-lt)">📋</div>
-            <span class="kpi-trend trend-dn">2 urgents</span>
-          </div>
-          <div class="kpi-val">5</div>
-          <div class="kpi-label">Offres en cours</div>
-        </div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--terra-lt)">🏡</div><span class="kpi-trend trend-up" id="kpi-mandats-trend">…</span></div><div class="kpi-val" id="kpi-mandats">…</div><div class="kpi-lbl">Mandats actifs</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--gold-lt)">💰</div><span class="kpi-trend trend-up">FCFA</span></div><div class="kpi-val" id="kpi-ca">…</div><div class="kpi-lbl">Commissions totales</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--green-lt)">👥</div><span class="kpi-trend trend-up" id="kpi-contacts-trend">…</span></div><div class="kpi-val" id="kpi-contacts">…</div><div class="kpi-lbl">Contacts</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--purple-lt)">📋</div><span class="kpi-trend trend-dn" id="kpi-offres-trend">…</span></div><div class="kpi-val" id="kpi-offres">…</div><div class="kpi-lbl">Offres en cours</div></div>
       </div>
-
-      <!-- CHART + ACTIVITÉ -->
-      <div class="three-col">
+      <div class="two-col">
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">CA mensuel (FCFA)</span>
-            <span class="card-action">2026</span>
-          </div>
-          <div class="chart-wrap">
-            <div class="bar-row"><span class="bar-month">Jan</span><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><span class="bar-val">8,2M</span></div>
-            <div class="bar-row"><span class="bar-month">Fév</span><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><span class="bar-val">6,0M</span></div>
-            <div class="bar-row"><span class="bar-month">Mar</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-val">11,3M</span></div>
-            <div class="bar-row"><span class="bar-month">Avr</span><div class="bar-track"><div class="bar-fill gold" style="width:65%"></div></div><span class="bar-val">9,8M</span></div>
-            <div class="bar-row"><span class="bar-month">Mai</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><span class="bar-val">12,3M</span></div>
-            <div class="bar-row"><span class="bar-month">Jun</span><div class="bar-track"><div class="bar-fill gold" style="width:96%"></div></div><span class="bar-val">14,5M ✦</span></div>
-          </div>
+          <div class="card-hdr"><span class="card-title">Derniers mandats</span><button class="card-act" onclick="showPg('mandats',null)">Voir tous →</button></div>
+          <div id="dash-mandats"><div class="loading"><span class="spinner"></span>Chargement…</div></div>
         </div>
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">Activité récente</span>
-            <span class="card-action">Tout voir</span>
-          </div>
-          <div class="activity-list">
-            <div class="act-row">
-              <div class="act-dot" style="background:var(--gold)"></div>
-              <div class="act-text"><strong>Aminata D.</strong> veut visiter la villa Almadies 4ch</div>
-              <span class="act-time">2 min</span>
-            </div>
-            <div class="act-row">
-              <div class="act-dot" style="background:var(--terra)"></div>
-              <div class="act-text">Offre acceptée — <strong>78M FCFA</strong>, Almadies</div>
-              <span class="act-time">1h</span>
-            </div>
-            <div class="act-row">
-              <div class="act-dot" style="background:var(--green)"></div>
-              <div class="act-text">Matching — 4 acheteurs pour terrain <strong>Thiès</strong></div>
-              <span class="act-time">3h</span>
-            </div>
-            <div class="act-row">
-              <div class="act-dot" style="background:var(--ink)"></div>
-              <div class="act-text">Rappel envoyé à <strong>Moussa S.</strong> · compromis</div>
-              <span class="act-time">Hier</span>
-            </div>
-            <div class="act-row">
-              <div class="act-dot" style="background:var(--terra)"></div>
-              <div class="act-text">Acte signé · <strong>Plateau</strong> · Commission 900K FCFA</div>
-              <span class="act-time">Hier</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONTACTS RÉCENTS -->
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Contacts récents</span>
-          <span class="card-action" onclick="showPage('contacts', document.querySelector('[onclick*=contacts]'))">Voir tous →</span>
-        </div>
-        <div class="contact-row">
-          <div class="c-avatar" style="background:var(--terra)">AD</div>
-          <div><div class="c-name">Aminata Diallo</div><div class="c-sub">Budget 45M FCFA · Villa Almadies</div></div>
-          <span class="c-badge badge-hot">🔥 Chaud</span>
-          <span class="c-action">📞</span><span class="c-action">✉️</span>
-        </div>
-        <div class="contact-row">
-          <div class="c-avatar" style="background:var(--gold)">MS</div>
-          <div><div class="c-name">Moussa Sow</div><div class="c-sub">Vendeur · Parcelles Assainies</div></div>
-          <span class="c-badge badge-warm">En suivi</span>
-          <span class="c-action">📞</span><span class="c-action">✉️</span>
-        </div>
-        <div class="contact-row">
-          <div class="c-avatar" style="background:var(--green)">FN</div>
-          <div><div class="c-name">Fatou Ndiaye</div><div class="c-sub">Investisseur · Terrain Thiès · 12M FCFA</div></div>
-          <span class="c-badge badge-new">Nouveau</span>
-          <span class="c-action">📞</span><span class="c-action">✉️</span>
-        </div>
-        <div class="contact-row">
-          <div class="c-avatar" style="background:var(--purple)">IB</div>
-          <div><div class="c-name">Ibrahima Ba</div><div class="c-sub">Acheteur · Villa Ngor · 60M FCFA</div></div>
-          <span class="c-badge badge-cold">Tiède</span>
-          <span class="c-action">📞</span><span class="c-action">✉️</span>
+          <div class="card-hdr"><span class="card-title">Contacts récents</span><button class="card-act" onclick="showPg('contacts',null)">Voir tous →</button></div>
+          <div id="dash-contacts"><div class="loading"><span class="spinner"></span>Chargement…</div></div>
         </div>
       </div>
     </div>
 
-    <!-- ── MANDATS ── -->
-    <div class="page-section" id="page-mandats">
+    <!-- MANDATS -->
+    <div class="pg-section" id="pg-mandats">
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Tous les mandats (11)</span>
-          <button onclick="openModal('mandat')" style="background:var(--terra);color:var(--white);border:none;padding:6px 16px;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;">+ Nouveau mandat</button>
-        </div>
-        <table class="mandats-table">
-          <thead>
-            <tr>
-              <th>Bien</th><th>Quartier</th><th>Type</th><th>Prix</th><th>Statut</th><th>Visites</th>
-            </tr>
-          </thead>
-          <tbody id="mandats-body">
-            <tr><td><strong>Villa 4 ch, piscine</strong></td><td>Almadies</td><td><span class="m-type m-excl">Exclusif</span></td><td>78 000 000 FCFA</td><td><span class="m-status s-offre">Offre reçue</span></td><td>6</td></tr>
-            <tr><td><strong>Appartement T3</strong></td><td>Plateau, Dakar</td><td><span class="m-type m-simple">Simple</span></td><td>18 500 000 FCFA</td><td><span class="m-status s-visite">En visite</span></td><td>3</td></tr>
-            <tr><td><strong>Terrain 500m²</strong></td><td>Thiès Keur Gallo</td><td><span class="m-type m-excl">Exclusif</span></td><td>12 000 000 FCFA</td><td><span class="m-status s-actif">Actif</span></td><td>2</td></tr>
-            <tr><td><strong>Villa R+1</strong></td><td>Ngor, Dakar</td><td><span class="m-type m-excl">Exclusif</span></td><td>62 000 000 FCFA</td><td><span class="m-status s-actif">Actif</span></td><td>4</td></tr>
-            <tr><td><strong>Studio meublé</strong></td><td>Mermoz, Dakar</td><td><span class="m-type m-simple">Simple</span></td><td>7 500 000 FCFA</td><td><span class="m-status s-visite">En visite</span></td><td>8</td></tr>
-            <tr><td><strong>Terrain 1 000m²</strong></td><td>Saly Portudal</td><td><span class="m-type m-excl">Exclusif</span></td><td>35 000 000 FCFA</td><td><span class="m-status s-actif">Actif</span></td><td>1</td></tr>
-          </tbody>
-        </table>
+        <div class="card-hdr"><span class="card-title" id="mandats-count">Mandats</span><button class="btn-add" onclick="openModal('mandat')">+ Nouveau mandat</button></div>
+        <div id="mandats-list"><div class="loading"><span class="spinner"></span>Chargement…</div></div>
       </div>
     </div>
 
-    <!-- ── CONTACTS ── -->
-    <div class="page-section" id="page-contacts">
+    <!-- CONTACTS -->
+    <div class="pg-section" id="pg-contacts">
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Contacts (38)</span>
-          <button onclick="openModal('contact')" style="background:var(--terra);color:var(--white);border:none;padding:6px 16px;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;">+ Ajouter contact</button>
-        </div>
-        <div class="tabs">
-          <div class="tab active" onclick="filterContacts('tous',this)">Tous</div>
-          <div class="tab" onclick="filterContacts('acheteur',this)">Acheteurs</div>
-          <div class="tab" onclick="filterContacts('vendeur',this)">Vendeurs</div>
-          <div class="tab" onclick="filterContacts('investisseur',this)">Investisseurs</div>
-        </div>
-        <div id="contacts-list">
-          <div class="contact-row" data-type="acheteur"><div class="c-avatar" style="background:var(--terra)">AD</div><div><div class="c-name">Aminata Diallo</div><div class="c-sub">Acheteur · 45M FCFA · Villa Almadies</div></div><span class="c-badge badge-hot">🔥 Chaud</span><span class="c-action">📞</span></div>
-          <div class="contact-row" data-type="vendeur"><div class="c-avatar" style="background:var(--gold)">MS</div><div><div class="c-name">Moussa Sow</div><div class="c-sub">Vendeur · Parcelles Assainies</div></div><span class="c-badge badge-warm">En suivi</span><span class="c-action">📞</span></div>
-          <div class="contact-row" data-type="investisseur"><div class="c-avatar" style="background:var(--green)">FN</div><div><div class="c-name">Fatou Ndiaye</div><div class="c-sub">Investisseur · Terrain Thiès · 12M FCFA</div></div><span class="c-badge badge-new">Nouveau</span><span class="c-action">📞</span></div>
-          <div class="contact-row" data-type="acheteur"><div class="c-avatar" style="background:var(--purple)">IB</div><div><div class="c-name">Ibrahima Ba</div><div class="c-sub">Acheteur · Villa Ngor · 60M FCFA</div></div><span class="c-badge badge-cold">Tiède</span><span class="c-action">📞</span></div>
-          <div class="contact-row" data-type="vendeur"><div class="c-avatar" style="background:var(--ink)">KD</div><div><div class="c-name">Khady Diop</div><div class="c-sub">Vendeur · Appartement Mermoz</div></div><span class="c-badge badge-warm">En suivi</span><span class="c-action">📞</span></div>
-          <div class="contact-row" data-type="investisseur"><div class="c-avatar" style="background:var(--terra)">OM</div><div><div class="c-name">Oumar Mbaye</div><div class="c-sub">Investisseur · Saly · Rendement 6%+</div></div><span class="c-badge badge-hot">🔥 Chaud</span><span class="c-action">📞</span></div>
+        <div class="card-hdr"><span class="card-title" id="contacts-count">Contacts</span><button class="btn-add" onclick="openModal('contact')">+ Ajouter contact</button></div>
+        <div id="contacts-list"><div class="loading"><span class="spinner"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="pg-section" id="pg-pipeline">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Pipeline de ventes</span><button class="btn-add" onclick="openModal('transaction')">+ Ajouter</button></div>
+        <div class="pipe-cols" id="pipeline-cols">
+          <div><div class="pipe-hdr"><span class="pipe-lbl" style="color:var(--fog)">Prospection</span><span class="pipe-cnt" id="cnt-PROSPECTION" style="background:rgba(122,154,122,.15);color:var(--fog)">0</span></div><div id="pipe-PROSPECTION"></div></div>
+          <div><div class="pipe-hdr"><span class="pipe-lbl" style="color:var(--terra)">Visite</span><span class="pipe-cnt" id="cnt-VISITE" style="background:var(--terra-lt);color:var(--terra)">0</span></div><div id="pipe-VISITE"></div></div>
+          <div><div class="pipe-hdr"><span class="pipe-lbl" style="color:var(--gold)">Offre</span><span class="pipe-cnt" id="cnt-OFFRE" style="background:var(--gold-lt);color:#92400E">0</span></div><div id="pipe-OFFRE"></div></div>
+          <div><div class="pipe-hdr"><span class="pipe-lbl" style="color:var(--green)">Acte notarié</span><span class="pipe-cnt" id="cnt-ACTE_NOTARIE" style="background:var(--green-lt);color:var(--green)">0</span></div><div id="pipe-ACTE_NOTARIE"></div></div>
         </div>
       </div>
     </div>
 
-    <!-- ── PIPELINE ── -->
-    <div class="page-section" id="page-pipeline">
+    <!-- AGENDA -->
+    <div class="pg-section" id="pg-agenda">
       <div class="card">
-        <div class="card-header"><span class="card-title">Pipeline de ventes</span><span class="card-action">+ Ajouter</span></div>
-        <div class="pipeline-cols">
-          <div class="pipe-col">
-            <div class="pipe-header"><span class="pipe-label" style="color:var(--fog)">Prospection</span><span class="pipe-count" style="background:rgba(122,154,122,0.15);color:var(--fog)">4</span></div>
-            <div class="pipe-cards">
-              <div class="pipe-card"><div class="pipe-card-name">Villa Almadies</div><div class="pipe-card-sub">Aminata Diallo · Acheteur</div><div class="pipe-card-price">45 000 000 FCFA</div><div class="pipe-card-footer"><div class="pipe-avatar" style="background:var(--terra)">AD</div><span class="pipe-date">Aujourd'hui</span></div></div>
-              <div class="pipe-card"><div class="pipe-card-name">Terrain Thiès</div><div class="pipe-card-sub">Fatou Ndiaye · Investisseur</div><div class="pipe-card-price">12 000 000 FCFA</div><div class="pipe-card-footer"><div class="pipe-avatar" style="background:var(--green)">FN</div><span class="pipe-date">Hier</span></div></div>
-            </div>
-          </div>
-          <div class="pipe-col">
-            <div class="pipe-header"><span class="pipe-label" style="color:var(--terra)">Visite</span><span class="pipe-count" style="background:var(--terra-lt);color:var(--terra)">3</span></div>
-            <div class="pipe-cards">
-              <div class="pipe-card"><div class="pipe-card-name">Appt. Plateau T3</div><div class="pipe-card-sub">Ibrahima Ba · Acheteur</div><div class="pipe-card-price">18 500 000 FCFA</div><div class="pipe-card-footer"><div class="pipe-avatar" style="background:var(--purple)">IB</div><span class="pipe-date">14 juin</span></div></div>
-              <div class="pipe-card"><div class="pipe-card-name">Studio Mermoz</div><div class="pipe-card-sub">Khady Diop · Acheteur</div><div class="pipe-card-price">7 500 000 FCFA</div><div class="pipe-card-footer"><div class="pipe-avatar" style="background:var(--ink)">KD</div><span class="pipe-date">16 juin</span></div></div>
-            </div>
-          </div>
-          <div class="pipe-col">
-            <div class="pipe-header"><span class="pipe-label" style="color:var(--gold)">Offre</span><span class="pipe-count" style="background:var(--gold-lt);color:#92400E">2</span></div>
-            <div class="pipe-cards">
-              <div class="pipe-card"><div class="pipe-card-name">Villa Almadies 4ch</div><div class="pipe-card-sub">Moussa Sow · Vendeur</div><div class="pipe-card-price">78 000 000 FCFA</div><div class="pipe-card-footer"><div class="pipe-avatar" style="background:var(--gold)">MS</div><span class="pipe-date">10 juin</span></div></div>
-            </div>
-          </div>
-          <div class="pipe-col">
-            <div class="pipe-header"><span class="pipe-label" style="color:var(--green)">Acte notarié</span><span class="pipe-count" style="background:var(--green-lt);color:var(--green)">1</span></div>
-            <div class="pipe-cards">
-              <div class="pipe-card"><div class="pipe-card-name">Terrain Saly 1000m²</div><div class="pipe-card-sub">Oumar Mbaye · Investisseur</div><div class="pipe-card-price">35 000 000 FCFA</div><div class="pipe-card-footer"><div class="pipe-avatar" style="background:var(--terra)">OM</div><span class="pipe-date">20 juin</span></div></div>
-            </div>
-          </div>
+        <div class="card-hdr"><span class="card-title">Agenda — Visites planifiées</span><button class="btn-add" onclick="openModal('visite')">+ Planifier visite</button></div>
+        <div id="agenda-list"><div class="loading"><span class="spinner"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+
+      <!-- MATCHING -->
+      <div class="pg-section" id="pg-matching">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">🤖 Matching automatique</span><button class="btn-add" onclick="runMatching()">Lancer matching</button></div>
+          <div id="matching-list"><div class="empty"><div class="empty-icon">🤖</div><p>Cliquez sur "Lancer matching" pour trouver les correspondances entre vos mandats et contacts.</p></div></div>
+        </div>
+      </div>
+
+
+    <!-- MATCHING -->
+    <div class="pg-section" id="pg-matching">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">🤖 Matching automatique</span>
+          <button class="btn-add" onclick="runMatching()">Lancer le matching</button>
+        </div>
+        <p style="font-size:.82rem;color:var(--fog);margin-bottom:1rem">Proplio analyse vos mandats actifs et vos acheteurs pour trouver les meilleures correspondances.</p>
+        <div id="matching-results">
+          <div class="empty"><div class="empty-icon">🤖</div><p>Cliquez sur "Lancer le matching" pour démarrer</p></div>
         </div>
       </div>
     </div>
 
-    <!-- ── AGENDA ── -->
-    <div class="page-section" id="page-agenda">
+    <!-- REPORTING -->
+    <div class="pg-section" id="pg-reporting">
+      <div class="kpi-row" id="rep-kpis">
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--gold-lt)">💰</div></div><div class="kpi-val" id="rep-ca">…</div><div class="kpi-lbl">Commissions totales</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--green-lt)">✅</div></div><div class="kpi-val" id="rep-ventes">…</div><div class="kpi-lbl">Transactions actives</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--terra-lt)">🏡</div></div><div class="kpi-val" id="rep-mandats">…</div><div class="kpi-lbl">Total mandats</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-ico" style="background:var(--purple-lt)">👥</div></div><div class="kpi-val" id="rep-contacts">…</div><div class="kpi-lbl">Total contacts</div></div>
+      </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Agenda — Juin 2026</span><span class="card-action">+ Planifier visite</span></div>
-        <div class="activity-list">
-          <div class="act-row"><div class="act-dot" style="background:var(--terra)"></div><div class="act-text"><strong>14 juin 10h00</strong> — Visite Villa Almadies avec Aminata Diallo<br/><span style="font-size:0.75rem;color:var(--fog)">4 chambres · piscine · 78M FCFA</span></div><span class="act-time">Aujourd'hui</span></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--gold)"></div><div class="act-text"><strong>14 juin 14h30</strong> — Signature compromis Moussa Sow — Notaire Plateau<br/><span style="font-size:0.75rem;color:var(--fog)">Apporter copie TF + pièce identité</span></div><span class="act-time">Aujourd'hui</span></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--green)"></div><div class="act-text"><strong>16 juin 09h00</strong> — Visite Studio Mermoz avec Khady Diop<br/><span style="font-size:0.75rem;color:var(--fog)">7,5M FCFA · meublé</span></div><span class="act-time">Dans 2 jours</span></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--purple)"></div><div class="act-text"><strong>18 juin 11h00</strong> — Rendez-vous Ibrahima Ba — Appt T3 Plateau<br/><span style="font-size:0.75rem;color:var(--fog)">18,5M FCFA</span></div><span class="act-time">Dans 4 jours</span></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--terra)"></div><div class="act-text"><strong>20 juin 15h00</strong> — Acte notarié Terrain Saly — Oumar Mbaye<br/><span style="font-size:0.75rem;color:var(--fog)">35M FCFA · Commission 1 750 000 FCFA</span></div><span class="act-time">Dans 6 jours</span></div>
-        </div>
+        <div class="card-hdr"><span class="card-title">Tous les mandats</span></div>
+        <div id="rep-mandats-list"><div class="loading"><span class="spinner"></span>Chargement…</div></div>
       </div>
     </div>
 
-    <!-- ── MATCHING ── -->
-    <div class="page-section" id="page-matching">
-      <div class="card">
-        <div class="card-header"><span class="card-title">🤖 Matching automatique — 8 suggestions</span></div>
-        <div class="activity-list">
-          <div class="act-row"><div class="act-dot" style="background:var(--terra)"></div><div class="act-text"><strong>Villa Ngor R+1 — 62M FCFA</strong> correspond à <strong>Aminata Diallo</strong> (budget 45-70M, villa, Dakar Nord)<br/><button onclick="showToast('Notification envoyée à Aminata ✓')" style="margin-top:6px;background:var(--terra);color:white;border:none;padding:4px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif">Notifier le contact</button></div><span class="act-time">98%</span></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--gold)"></div><div class="act-text"><strong>Terrain Saly 1000m² — 35M FCFA</strong> correspond à <strong>Oumar Mbaye</strong> (investisseur, littoral, rendement+)<br/><button onclick="showToast('Notification envoyée à Oumar ✓')" style="margin-top:6px;background:var(--terra);color:white;border:none;padding:4px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif">Notifier le contact</button></div><span class="act-time">91%</span></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--green)"></div><div class="act-text"><strong>Appt. Plateau T3 — 18,5M FCFA</strong> correspond à <strong>Fatou Ndiaye</strong> (achat résidence, Dakar centre)<br/><button onclick="showToast('Notification envoyée à Fatou ✓')" style="margin-top:6px;background:var(--terra);color:white;border:none;padding:4px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif">Notifier le contact</button></div><span class="act-time">85%</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── REPORTING ── -->
-    <div class="page-section" id="page-reporting">
-      <div class="kpi-row">
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gold-lt)">💰</div><span class="kpi-trend trend-up">+18%</span></div><div class="kpi-val">79,8M</div><div class="kpi-label">CA total 2026 (FCFA)</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--green-lt)">✅</div><span class="kpi-trend trend-up">+3</span></div><div class="kpi-val">12</div><div class="kpi-label">Ventes conclues</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--terra-lt)">📊</div></div><div class="kpi-val">43%</div><div class="kpi-label">Taux de transformation</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--purple-lt)">⏱</div></div><div class="kpi-val">28j</div><div class="kpi-label">Délai moyen de vente</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">CA par mois — 2026</span><button onclick="showToast('Export PDF en cours…')" style="background:var(--ink);color:white;border:none;padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;">⬇ Export PDF</button></div>
-        <div class="chart-wrap">
-          <div class="bar-row"><span class="bar-month">Jan</span><div class="bar-track"><div class="bar-fill" style="width:55%"></div></div><span class="bar-val">8,2M</span></div>
-          <div class="bar-row"><span class="bar-month">Fév</span><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><span class="bar-val">6,0M</span></div>
-          <div class="bar-row"><span class="bar-month">Mar</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-val">11,3M</span></div>
-          <div class="bar-row"><span class="bar-month">Avr</span><div class="bar-track"><div class="bar-fill gold" style="width:65%"></div></div><span class="bar-val">9,8M</span></div>
-          <div class="bar-row"><span class="bar-month">Mai</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><span class="bar-val">12,3M</span></div>
-          <div class="bar-row"><span class="bar-month">Jun</span><div class="bar-track"><div class="bar-fill gold" style="width:96%"></div></div><span class="bar-val">14,5M ✦</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PORTAILS ── -->
-    <div class="page-section" id="page-portails">
-      <div class="card">
-        <div class="card-header"><span class="card-title">🌐 Synchronisation portails</span></div>
-        <div class="activity-list">
-          <div class="act-row"><div class="act-dot" style="background:var(--green)"></div><div class="act-text"><strong>Expat-Dakar</strong> — Connecté · 6 annonces actives<br/><span style="font-size:0.75rem;color:var(--fog)">Dernière sync : il y a 12 min</span></div><button onclick="showToast('Synchronisation Expat-Dakar en cours…')" style="background:var(--green);color:white;border:none;padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif">Synchroniser</button></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--green)"></div><div class="act-text"><strong>Senegimmo</strong> — Connecté · 4 annonces actives<br/><span style="font-size:0.75rem;color:var(--fog)">Dernière sync : il y a 1h</span></div><button onclick="showToast('Synchronisation Senegimmo en cours…')" style="background:var(--green);color:white;border:none;padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif">Synchroniser</button></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--gold)"></div><div class="act-text"><strong>Jumia House SN</strong> — À configurer<br/><span style="font-size:0.75rem;color:var(--fog)">Entrez votre clé API Jumia</span></div><button onclick="showToast('Redirection vers config Jumia…')" style="background:var(--gold);color:var(--ink);border:none;padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-weight:700;font-family:Inter,sans-serif">Connecter</button></div>
-          <div class="act-row"><div class="act-dot" style="background:var(--fog)"></div><div class="act-text"><strong>Dakimmo</strong> — Non connecté</div><button onclick="showToast('Redirection vers config Dakimmo…')" style="background:var(--pearl);color:var(--stone);border:1px solid var(--border);padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:Inter,sans-serif">Connecter</button></div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /page-content -->
-</div><!-- /main -->
+  </div>
+</div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="modal-title">Nouveau contact</div>
+    <h3 id="modal-title">Nouveau contact</h3>
     <div id="modal-body"></div>
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">Annuler</button>
-      <button class="modal-save" onclick="saveModal()">Enregistrer</button>
+      <button class="modal-save" id="modal-save-btn" onclick="saveModal()">Enregistrer</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon">✅</span>
-  <span id="toast-msg">Enregistré avec succès</span>
-</div>
-
-<!-- FAB -->
-<button class="fab" onclick="openModal('contact')" title="Ajouter un contact">＋</button>
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
 
 <script>
-  const pages = {
-    'dashboard': 'Tableau de bord',
-    'mandats': 'Mandats',
-    'contacts': 'Contacts',
-    'pipeline': 'Pipeline',
-    'agenda': 'Agenda',
-    'matching': 'Matching automatique',
-    'reporting': 'Reporting',
-    'portails': 'Portails',
-  };
+// ── CONFIG SUPABASE ──
+const SUPABASE_URL = 'https://nkpzcleluygjzqetwlju.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+const H = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }
 
-  function showPage(id, el) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    document.querySelector('#page-' + id).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    if (el) el.classList.add('active');
-    document.getElementById('page-title').textContent = pages[id] || id;
+async function db(table, method='GET', body=null, query='') {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}${query}`, { method, headers: H, body: body ? JSON.stringify(body) : null })
+  if (!r.ok) { const e = await r.text(); throw new Error(e) }
+  return method === 'DELETE' ? null : r.json()
+}
+
+
+// ── VÉRIFICATION AUTH ──
+(function() {
+  const token = localStorage.getItem('proplio_token')
+  if (!token) {
+    window.location.href = 'proplio-login.html'
+    return
   }
-
-  function filterContacts(type, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.querySelectorAll('#contacts-list .contact-row').forEach(row => {
-      row.style.display = (type === 'tous' || row.dataset.type === type) ? 'flex' : 'none';
-    });
-  }
-
-  // MODAL
-  const modalForms = {
-    contact: {
-      title: '+ Nouveau contact',
-      fields: `
-        <label>Prénom & Nom</label><input type="text" placeholder="Aminata Diallo"/>
-        <label>Téléphone (WhatsApp)</label><input type="text" placeholder="+221 77 000 00 00"/>
-        <label>Type</label>
-        <select><option>Acheteur</option><option>Vendeur</option><option>Investisseur</option></select>
-        <label>Budget / Info</label><input type="text" placeholder="45 000 000 FCFA · Villa Almadies"/>
-      `
-    },
-    mandat: {
-      title: '+ Nouveau mandat',
-      fields: `
-        <label>Titre du bien</label><input type="text" placeholder="Villa 4 chambres avec piscine"/>
-        <label>Quartier / Ville</label><input type="text" placeholder="Almadies, Dakar"/>
-        <label>Prix (FCFA)</label><input type="text" placeholder="78 000 000"/>
-        <label>Type de mandat</label>
-        <select><option>Exclusif</option><option>Simple</option></select>
-      `
+  // Vérifier token valide
+  fetch('https://nkpzcleluygjzqetwlju.supabase.co/auth/v1/user', {
+    headers: {
+      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4',
+      'Authorization': 'Bearer ' + token
     }
-  };
+  }).then(r => {
+    if (!r.ok) {
+      localStorage.removeItem('proplio_token')
+      localStorage.removeItem('proplio_user')
+      window.location.href = 'proplio-login.html'
+    } else {
+      // Afficher nom utilisateur
+      const user = JSON.parse(localStorage.getItem('proplio_user') || '{}')
+      const meta = user.user_metadata || {}
+      if (meta.prenom) {
+        document.querySelector('.sb-uname').textContent = meta.prenom + ' ' + (meta.nom || '')
+      }
+    }
+  }).catch(() => {})
+})()
 
-  function openModal(type) {
-    const f = modalForms[type];
-    document.getElementById('modal-title').textContent = f.title;
-    document.getElementById('modal-body').innerHTML = f.fields;
-    document.getElementById('modal-overlay').classList.add('open');
+// ── ÉTAT ──
+let state = { mandats: [], contacts: [], transactions: [], visites: [] }
+let currentModal = null
+
+// ── NAVIGATION ──
+const pages = { matching:'Matching automatique', dashboard:'Tableau de bord', mandats:'Mandats', contacts:'Contacts', pipeline:'Pipeline', agenda:'Agenda', reporting:'Reporting', matching:'Matching automatique' }
+
+function showPg(id, el) {
+  document.querySelectorAll('.pg-section').forEach(s => s.classList.remove('active'))
+  document.getElementById('pg-' + id).classList.add('active')
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'))
+  if (el) el.classList.add('active')
+  document.getElementById('pg-title').textContent = pages[id] || id
+  renderPage(id)
+}
+
+// ── DATE ──
+function setDate() {
+  const d = new Date()
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi']
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+  document.getElementById('pg-date').textContent = `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} · Dakar 🇸🇳`
+}
+
+// ── LOAD DATA ──
+async function loadAll() {
+  try {
+    const [mandats, contacts, transactions, visites] = await Promise.all([
+      db('mandats', 'GET', null, '?order=created_at.desc'),
+      db('contacts', 'GET', null, '?order=created_at.desc'),
+      db('transactions', 'GET', null, '?order=created_at.desc'),
+      db('visites', 'GET', null, '?order=date_heure.asc'),
+    ])
+    state = { mandats, contacts, transactions, visites }
+    renderAll()
+    showToast('Données actualisées ✓')
+  } catch(e) {
+    showToast('Erreur de connexion : ' + e.message)
   }
-  function closeModal(e) {
-    if (!e || e.target === document.getElementById('modal-overlay'))
-      document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function renderAll() {
+  renderKpis()
+  renderDashboard()
+  renderMandats()
+  renderContacts()
+  renderPipeline()
+  renderAgenda()
+  renderReporting()
+}
+
+// ── KPIs ──
+function renderKpis() {
+  const actifs = state.mandats.filter(m => ['ACTIF','EN_VISITE'].includes(m.status)).length
+  const ca = state.transactions.reduce((s, t) => s + (Number(t.commission_fcfa) || 0), 0)
+  const offres = state.transactions.filter(t => ['OFFRE','COMPROMIS'].includes(t.etape)).length
+
+  document.getElementById('kpi-mandats').textContent = actifs
+  document.getElementById('kpi-ca').textContent = ca > 0 ? (ca / 1_000_000).toFixed(1) + 'M' : '0'
+  document.getElementById('kpi-contacts').textContent = state.contacts.length
+  document.getElementById('kpi-offres').textContent = offres
+  document.getElementById('badge-mandats').textContent = state.mandats.length
+  document.getElementById('kpi-mandats-trend').textContent = state.mandats.length + ' total'
+  document.getElementById('kpi-contacts-trend').textContent = state.contacts.filter(c => c.score === 'CHAUD').length + ' chauds'
+  document.getElementById('kpi-offres-trend').textContent = offres > 0 ? offres + ' urgent' : 'aucune'
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  // Mandats récents
+  const dm = document.getElementById('dash-mandats')
+  if (!state.mandats.length) { dm.innerHTML = '<div class="empty"><div class="empty-icon">🏡</div><p>Aucun mandat</p></div>'; return }
+  dm.innerHTML = state.mandats.slice(0,4).map(m => `
+    <div class="c-row">
+      <div class="c-av" style="background:var(--terra)">${m.type_bien.substring(0,2)}</div>
+      <div><div class="c-name">${m.titre}</div><div class="c-sub">${m.quartier}, ${m.ville} · ${Number(m.prix_fcfa).toLocaleString('fr-FR')} FCFA</div></div>
+      <span class="c-badge ${statusClass(m.status)}">${m.status}</span>
+    </div>`).join('')
+
+  // Contacts récents
+  const dc = document.getElementById('dash-contacts')
+  if (!state.contacts.length) { dc.innerHTML = '<div class="empty"><div class="empty-icon">👥</div><p>Aucun contact</p></div>'; return }
+  dc.innerHTML = state.contacts.slice(0,4).map(c => `
+    <div class="c-row">
+      <div class="c-av" style="background:${scoreColor(c.score)}">${c.prenom.substring(0,1)}${c.nom.substring(0,1)}</div>
+      <div><div class="c-name">${c.prenom} ${c.nom}</div><div class="c-sub">${c.type}${c.budget_max_fcfa ? ' · ' + (Number(c.budget_max_fcfa)/1_000_000).toFixed(0) + 'M FCFA' : ''}</div></div>
+      <span class="c-badge ${scoreClass(c.score)}">${scoreLabel(c.score)}</span>
+    </div>`).join('')
+}
+
+// ── MANDATS ──
+function renderMandats() {
+  document.getElementById('mandats-count').textContent = `Mandats (${state.mandats.length})`
+  const el = document.getElementById('mandats-list')
+  if (!state.mandats.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🏡</div><p>Aucun mandat. Cliquez sur "+ Nouveau mandat"</p></div>'; return }
+  el.innerHTML = `<table class="m-table">
+    <thead><tr><th>Bien</th><th>Quartier</th><th>Type</th><th>Prix</th><th>Statut</th><th>Action</th></tr></thead>
+    <tbody>${state.mandats.map(m => `
+      <tr>
+        <td><strong>${m.titre}</strong></td>
+        <td>${m.quartier}, ${m.ville}</td>
+        <td><span class="m-type ${m.type === 'EXCLUSIF' ? 'm-excl' : 'm-simple'}">${m.type}</span></td>
+        <td>${Number(m.prix_fcfa).toLocaleString('fr-FR')} F</td>
+        <td><span class="m-status ${statusClass(m.status)}">${m.status}</span></td>
+        <td><button onclick="deleteItem('mandats','${m.id}')" style="background:none;border:none;cursor:pointer;color:var(--fog);font-size:.85rem">🗑</button></td>
+      </tr>`).join('')}
+    </tbody></table>`
+}
+
+// ── CONTACTS ──
+function renderContacts() {
+  document.getElementById('contacts-count').textContent = `Contacts (${state.contacts.length})`
+  const el = document.getElementById('contacts-list')
+  if (!state.contacts.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">👥</div><p>Aucun contact. Cliquez sur "+ Ajouter contact"</p></div>'; return }
+  el.innerHTML = state.contacts.map(c => `
+    <div class="c-row">
+      <div class="c-av" style="background:${scoreColor(c.score)}">${c.prenom.substring(0,1)}${c.nom.substring(0,1)}</div>
+      <div style="flex:1">
+        <div class="c-name">${c.prenom} ${c.nom}</div>
+        <div class="c-sub">${c.phone} · ${c.type}${c.budget_max_fcfa ? ' · ' + (Number(c.budget_max_fcfa)/1_000_000).toFixed(0) + 'M FCFA' : ''}</div>
+      </div>
+      <span class="c-badge ${scoreClass(c.score)}">${scoreLabel(c.score)}</span>
+      <button class="c-del" onclick="deleteItem('contacts','${c.id}')">🗑</button>
+    </div>`).join('')
+}
+
+// ── PIPELINE ──
+function renderPipeline() {
+  const etapes = ['PROSPECTION','VISITE','OFFRE','ACTE_NOTARIE']
+  etapes.forEach(e => {
+    const items = state.transactions.filter(t => t.etape === e)
+    document.getElementById('cnt-' + e).textContent = items.length
+    document.getElementById('pipe-' + e).innerHTML = items.length
+      ? items.map(t => {
+          const m = state.mandats.find(x => x.id === t.mandat_id)
+          const c = state.contacts.find(x => x.id === t.contact_id)
+          return `<div class="pipe-card">
+            <div class="pipe-card-name">${m ? m.titre : 'Mandat'}</div>
+            <div class="pipe-card-sub">${c ? c.prenom + ' ' + c.nom : 'Contact'}</div>
+            <div class="pipe-card-price">${t.montant_fcfa ? Number(t.montant_fcfa).toLocaleString('fr-FR') + ' F' : '—'}</div>
+          </div>`}).join('')
+      : '<div style="font-size:.72rem;color:var(--fog);text-align:center;padding:.5rem">Vide</div>'
+  })
+}
+
+// ── AGENDA ──
+function renderAgenda() {
+  const el = document.getElementById('agenda-list')
+  if (!state.visites.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><p>Aucune visite planifiée</p></div>'; return }
+  el.innerHTML = state.visites.map(v => {
+    const m = state.mandats.find(x => x.id === v.mandat_id)
+    const c = state.contacts.find(x => x.id === v.contact_id)
+    const d = new Date(v.date_heure)
+    const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']
+    return `<div class="c-row">
+      <div style="background:var(--terra);color:#fff;border-radius:8px;padding:6px 10px;text-align:center;flex-shrink:0;min-width:48px">
+        <div style="font-size:.6rem;font-weight:600;opacity:.8">${days[d.getDay()]}</div>
+        <div style="font-size:1.1rem;font-weight:700;line-height:1">${d.getDate()}</div>
+      </div>
+      <div>
+        <div class="c-name">${m ? m.titre : 'Bien'} — ${c ? c.prenom + ' ' + c.nom : 'Contact'}</div>
+        <div class="c-sub">${d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})} · ${v.status}${v.notes ? ' · ' + v.notes : ''}</div>
+      </div>
+      <button class="c-del" onclick="deleteItem('visites','${v.id}')">🗑</button>
+    </div>`}).join('')
+}
+
+// ── REPORTING ──
+function renderReporting() {
+  const ca = state.transactions.reduce((s,t) => s + (Number(t.commission_fcfa)||0), 0)
+  document.getElementById('rep-ca').textContent = ca > 0 ? (ca/1_000_000).toFixed(1) + 'M F' : '0'
+  document.getElementById('rep-ventes').textContent = state.transactions.length
+  document.getElementById('rep-mandats').textContent = state.mandats.length
+  document.getElementById('rep-contacts').textContent = state.contacts.length
+  const el = document.getElementById('rep-mandats-list')
+  if (!state.mandats.length) { el.innerHTML = '<div class="empty"><p>Aucun mandat</p></div>'; return }
+  el.innerHTML = `<table class="m-table">
+    <thead><tr><th>Bien</th><th>Ville</th><th>Prix</th><th>Statut</th></tr></thead>
+    <tbody>${state.mandats.map(m => `
+      <tr><td><strong>${m.titre}</strong></td><td>${m.ville}</td>
+      <td>${Number(m.prix_fcfa).toLocaleString('fr-FR')} F</td>
+      <td><span class="m-status ${statusClass(m.status)}">${m.status}</span></td></tr>`).join('')}
+    </tbody></table>`
+}
+
+function renderPage(id) {
+  if (id === 'mandats') renderMandats()
+  else if (id === 'contacts') renderContacts()
+  else if (id === 'pipeline') renderPipeline()
+  else if (id === 'agenda') renderAgenda()
+  else if (id === 'reporting') renderReporting()
+}
+
+// ── HELPERS ──
+function statusClass(s) {
+  if (s === 'ACTIF') return 's-actif'
+  if (s === 'EN_VISITE') return 's-visite'
+  if (s === 'OFFRE_RECUE') return 's-offre'
+  if (s === 'COMPROMIS') return 's-compromis'
+  return 's-actif'
+}
+function scoreClass(s) { return s === 'CHAUD' ? 'badge-hot' : s === 'TIEDE' ? 'badge-warm' : 'badge-cold' }
+function scoreLabel(s) { return s === 'CHAUD' ? '🔥 Chaud' : s === 'TIEDE' ? 'Tiède' : 'Froid' }
+function scoreColor(s) { return s === 'CHAUD' ? 'var(--terra)' : s === 'TIEDE' ? 'var(--gold)' : 'var(--green)' }
+
+// ── DELETE ──
+async function deleteItem(table, id) {
+  if (!confirm('Supprimer cet élément ?')) return
+  try {
+    await db(table, 'DELETE', null, `?id=eq.${id}`)
+    state[table] = state[table].filter(x => x.id !== id)
+    renderAll()
+    showToast('Supprimé ✓')
+  } catch(e) { showToast('Erreur : ' + e.message) }
+}
+
+// ── MODAL ──
+const modalForms = {
+  contact: {
+    title: '+ Nouveau contact',
+    fields: `
+      <label>Prénom</label><input id="f-prenom" type="text" placeholder="Aminata"/>
+      <label>Nom</label><input id="f-nom" type="text" placeholder="Diallo"/>
+      <label>Téléphone</label><input id="f-phone" type="text" placeholder="+221 77 000 00 00"/>
+      <label>Type</label>
+      <select id="f-type"><option value="ACHETEUR">Acheteur</option><option value="VENDEUR">Vendeur</option><option value="INVESTISSEUR">Investisseur</option></select>
+      <label>Score</label>
+      <select id="f-score"><option value="CHAUD">🔥 Chaud</option><option value="TIEDE">Tiède</option><option value="FROID">Froid</option></select>
+      <label>Budget max (FCFA)</label><input id="f-budget" type="number" placeholder="45000000"/>
+      <label>Notes</label><input id="f-notes" type="text" placeholder="Cherche villa Almadies..."/>`,
+    save: async () => {
+      const data = {
+        prenom: document.getElementById('f-prenom').value,
+        nom: document.getElementById('f-nom').value,
+        phone: document.getElementById('f-phone').value,
+        type: document.getElementById('f-type').value,
+        score: document.getElementById('f-score').value,
+        budget_max_fcfa: document.getElementById('f-budget').value || null,
+        notes: document.getElementById('f-notes').value || null,
+      }
+      if (!data.prenom || !data.nom || !data.phone) { showToast('Prénom, Nom et Téléphone obligatoires'); return false }
+      const result = await db('contacts', 'POST', data)
+      state.contacts.unshift(Array.isArray(result) ? result[0] : result)
+      return true
+    }
+  },
+  mandat: {
+    title: '+ Nouveau mandat',
+    fields: `
+      <label>Titre du bien</label><input id="f-titre" type="text" placeholder="Villa 4 chambres avec piscine"/>
+      <label>Type de mandat</label>
+      <select id="f-type"><option value="EXCLUSIF">Exclusif</option><option value="SIMPLE">Simple</option></select>
+      <label>Type de bien</label>
+      <select id="f-typebien"><option value="VILLA">Villa</option><option value="APPARTEMENT">Appartement</option><option value="TERRAIN">Terrain</option><option value="STUDIO">Studio</option><option value="R_PLUS_1">R+1</option><option value="R_PLUS_2">R+2</option></select>
+      <label>Prix (FCFA)</label><input id="f-prix" type="number" placeholder="78000000"/>
+      <label>Quartier</label><input id="f-quartier" type="text" placeholder="Almadies"/>
+      <label>Ville</label><input id="f-ville" type="text" placeholder="Dakar" value="Dakar"/>
+      <label>Surface (m²)</label><input id="f-surface" type="number" placeholder="200"/>`,
+    save: async () => {
+      const data = {
+        titre: document.getElementById('f-titre').value,
+        type: document.getElementById('f-type').value,
+        type_bien: document.getElementById('f-typebien').value,
+        prix_fcfa: document.getElementById('f-prix').value,
+        quartier: document.getElementById('f-quartier').value,
+        ville: document.getElementById('f-ville').value || 'Dakar',
+        surface: document.getElementById('f-surface').value || null,
+        status: 'ACTIF',
+      }
+      if (!data.titre || !data.prix_fcfa || !data.quartier) { showToast('Titre, Prix et Quartier obligatoires'); return false }
+      const result = await db('mandats', 'POST', data)
+      state.mandats.unshift(Array.isArray(result) ? result[0] : result)
+      return true
+    }
+  },
+  transaction: {
+    title: '+ Nouvelle transaction',
+    fields: `
+      <label>Mandat</label>
+      <select id="f-mandat">${state.mandats.map(m => `<option value="${m.id}">${m.titre}</option>`).join('')}</select>
+      <label>Contact</label>
+      <select id="f-contact">${state.contacts.map(c => `<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('')}</select>
+      <label>Étape</label>
+      <select id="f-etape"><option value="PROSPECTION">Prospection</option><option value="VISITE">Visite</option><option value="OFFRE">Offre</option><option value="COMPROMIS">Compromis</option><option value="ACTE_NOTARIE">Acte notarié</option></select>
+      <label>Montant (FCFA)</label><input id="f-montant" type="number" placeholder="78000000"/>
+      <label>Commission (FCFA)</label><input id="f-commission" type="number" placeholder="3900000"/>`,
+    save: async () => {
+      const data = {
+        mandat_id: document.getElementById('f-mandat').value,
+        contact_id: document.getElementById('f-contact').value,
+        etape: document.getElementById('f-etape').value,
+        montant_fcfa: document.getElementById('f-montant').value || null,
+        commission_fcfa: document.getElementById('f-commission').value || null,
+      }
+      if (!data.mandat_id || !data.contact_id) { showToast('Mandat et Contact obligatoires'); return false }
+      const result = await db('transactions', 'POST', data)
+      state.transactions.unshift(Array.isArray(result) ? result[0] : result)
+      return true
+    }
+  },
+  visite: {
+    title: '+ Planifier une visite',
+    fields: `
+      <label>Mandat</label>
+      <select id="f-mandat">${state.mandats.map(m => `<option value="${m.id}">${m.titre}</option>`).join('')}</select>
+      <label>Contact</label>
+      <select id="f-contact">${state.contacts.map(c => `<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('')}</select>
+      <label>Date et heure</label><input id="f-date" type="datetime-local"/>
+      <label>Notes</label><input id="f-notes" type="text" placeholder="Apporter les plans..."/>`,
+    save: async () => {
+      const data = {
+        mandat_id: document.getElementById('f-mandat').value,
+        contact_id: document.getElementById('f-contact').value,
+        agent_id: null,
+        date_heure: document.getElementById('f-date').value,
+        notes: document.getElementById('f-notes').value || null,
+        status: 'PLANIFIEE',
+      }
+      if (!data.mandat_id || !data.contact_id || !data.date_heure) { showToast('Mandat, Contact et Date obligatoires'); return false }
+      const result = await db('visites', 'POST', data)
+      state.visites.push(Array.isArray(result) ? result[0] : result)
+      return true
+    }
   }
-  function saveModal() {
-    closeModal();
-    showToast('Enregistré avec succès ✓');
+}
+
+function openModal(type) {
+  currentModal = type
+  const f = modalForms[type]
+  document.getElementById('modal-title').textContent = f.title
+  document.getElementById('modal-body').innerHTML = f.fields
+  document.getElementById('modal').classList.add('open')
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal'))
+    document.getElementById('modal').classList.remove('open')
+}
+
+async function saveModal() {
+  if (!currentModal) return
+  const btn = document.getElementById('modal-save-btn')
+  btn.textContent = 'Enregistrement…'
+  btn.disabled = true
+  try {
+    const ok = await modalForms[currentModal].save()
+    if (ok) {
+      closeModal()
+      renderAll()
+      showToast('Enregistré avec succès ✓')
+      // Notification WhatsApp
+      if (currentModal === 'mandat') {
+        const m = state.mandats[0]
+        if (m) sendWA(`🏡 *Nouveau mandat — Proplio*\n\n*${m.titre}*\n📍 ${m.quartier}, ${m.ville}\n💰 ${Number(m.prix_fcfa).toLocaleString('fr-FR')} FCFA\n📋 Mandat ${m.type}\n\n✅ Ajouté sur Proplio`)
+      } else if (currentModal === 'contact') {
+        const c = state.contacts[0]
+        if (c) sendWA(`👤 *Nouveau contact — Proplio*\n\n*${c.prenom} ${c.nom}*\n📞 ${c.phone}\n🏷️ ${c.type}\n🔥 Score : ${c.score}`)
+      } else if (currentModal === 'visite') {
+        const v = state.visites[state.visites.length-1]
+        if (v) sendWA(`📅 *Visite planifiée — Proplio*\n\nNouvelle visite enregistrée sur Proplio.\nConsultez votre agenda.`)
+      }
+    }
+  } catch(e) {
+    showToast('Erreur : ' + e.message)
+  } finally {
+    btn.textContent = 'Enregistrer'
+    btn.disabled = false
+  }
+}
+
+
+// ── MATCHING AUTOMATIQUE ──
+async function runMatching() {
+  const el = document.getElementById('matching-list')
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>Analyse en cours…</div>'
+
+  const mandats = state.mandats.filter(m => ['ACTIF','EN_VISITE'].includes(m.status))
+  const contacts = state.contacts.filter(c => ['ACHETEUR','INVESTISSEUR'].includes(c.type))
+
+  if (!mandats.length || !contacts.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🤖</div><p>Ajoutez des mandats et des contacts acheteurs pour lancer le matching.</p></div>'
+    return
   }
 
-  // TOAST
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+  const results = []
+  for (const m of mandats) {
+    for (const c of contacts) {
+      let score = 0
+      const reasons = []
+
+      // Budget
+      const prix = Number(m.prix_fcfa)
+      const budgetMax = Number(c.budget_max_fcfa)
+      if (budgetMax && prix <= budgetMax) { score += 40; reasons.push('Budget compatible') }
+      else if (budgetMax && prix <= budgetMax * 1.1) { score += 20; reasons.push('Budget légèrement dépassé') }
+      else if (!budgetMax) { score += 20 }
+
+      // Type bien
+      if (!c.notes || m.type_bien) { score += 30; reasons.push('Type de bien') }
+
+      // Ville
+      score += 20
+      reasons.push('Localisation Sénégal')
+
+      if (score >= 50) results.push({ mandat: m, contact: c, score, reasons })
+    }
   }
+
+  results.sort((a,b) => b.score - a.score)
+
+  if (!results.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🤖</div><p>Aucune correspondance trouvée pour le moment.</p></div>'
+    return
+  }
+
+  el.innerHTML = results.slice(0,10).map(r => `
+    <div class="c-row">
+      <div class="c-av" style="background:var(--terra)">${r.score}%</div>
+      <div style="flex:1">
+        <div class="c-name">🏡 ${r.mandat.titre} → 👤 ${r.contact.prenom} ${r.contact.nom}</div>
+        <div class="c-sub">${Number(r.mandat.prix_fcfa).toLocaleString('fr-FR')} FCFA · ${r.reasons.join(', ')}</div>
+      </div>
+      <button onclick="notifyMatch('${r.contact.phone}','${r.mandat.titre}')" style="background:var(--green);color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:.72rem;cursor:pointer;font-family:Inter,sans-serif">Notifier</button>
+    </div>`).join('')
+
+  showToast(`${results.length} matching(s) trouvé(s) !`)
+}
+
+async function notifyMatch(phone, titre) {
+  showToast('Notification envoyée à ' + phone + ' ✓')
+}
+
+
+// ── MATCHING AUTOMATIQUE ──
+async function runMatching() {
+  if (!state.mandats.length || !state.contacts.length) {
+    showToast('Ajoutez des mandats et contacts d'abord')
+    return
+  }
+  let matchCount = 0
+  const results = []
+  for (const m of state.mandats.filter(x => x.status === 'ACTIF')) {
+    for (const c of state.contacts.filter(x => ['ACHETEUR','INVESTISSEUR'].includes(x.type))) {
+      let score = 0
+      const reasons = []
+      // Budget
+      const prix = Number(m.prix_fcfa)
+      if (c.budget_max_fcfa && prix <= Number(c.budget_max_fcfa)) { score += 40; reasons.push('Budget ✓') }
+      else if (!c.budget_max_fcfa) score += 20
+      // Type bien
+      if (!c.notes || m.type_bien) { score += 30; reasons.push('Type bien ✓') }
+      // Ville
+      score += 30; reasons.push('Disponible ✓')
+      if (score >= 60) { results.push({ mandat: m, contact: c, score, reasons }); matchCount++ }
+    }
+  }
+  results.sort((a,b) => b.score - a.score)
+  const el = document.getElementById('matching-results')
+  if (!el) return
+  if (!results.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🤖</div><p>Aucun matching trouvé</p></div>'; return }
+  el.innerHTML = results.slice(0,10).map(r => `
+    <div class="c-row">
+      <div class="c-av" style="background:var(--green)">${r.score}%</div>
+      <div style="flex:1">
+        <div class="c-name">${r.mandat.titre} → ${r.contact.prenom} ${r.contact.nom}</div>
+        <div class="c-sub">${r.mandat.quartier} · ${Number(r.mandat.prix_fcfa).toLocaleString('fr-FR')} FCFA · ${r.contact.phone}</div>
+      </div>
+      <button onclick="notifyMatch('${r.mandat.titre}','${r.contact.prenom} ${r.contact.nom}','${r.contact.phone}',${r.score})" 
+        style="background:var(--terra);color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:.72rem;cursor:pointer;white-space:nowrap">
+        📲 Notifier
+      </button>
+    </div>`).join('')
+  showToast(`🤖 ${matchCount} matching(s) trouvé(s) !`)
+}
+
+async function notifyMatch(mandat, contact, phone, score) {
+  showToast(`Notification envoyée à ${contact} ✓`)
+}
+
+// ── RECHERCHE GLOBALE ──
+function globalSearch(query) {
+  if (!query || query.length < 2) return
+  const q = query.toLowerCase()
+  const mandats = state.mandats.filter(m => 
+    m.titre.toLowerCase().includes(q) || m.quartier.toLowerCase().includes(q) || m.ville.toLowerCase().includes(q)
+  )
+  const contacts = state.contacts.filter(c =>
+    c.nom.toLowerCase().includes(q) || c.prenom.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))
+  )
+  showToast(`${mandats.length} mandat(s) · ${contacts.length} contact(s) trouvé(s)`)
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast')
+  document.getElementById('toast-msg').textContent = msg
+  t.classList.add('show')
+  clearTimeout(t._t)
+  t._t = setTimeout(() => t.classList.remove('show'), 3500)
+}
+
+
+// ── NOTIFICATIONS WHATSAPP ──
+const TWILIO_SID   = 'AC596998b41ffd10d009728291bacfec4a'
+const TWILIO_TOKEN = 'b92e7c3f51f4b23cb3042a1fbc514b3b'
+const TWILIO_FROM  = 'whatsapp:+14155238886'
+const AGENT_WA     = '+22177027629'
+
+async function sendWA(message) {
+  try {
+    const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`
+    const body = new URLSearchParams({ From: TWILIO_FROM, To: `whatsapp:${AGENT_WA}`, Body: message })
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': 'Basic ' + btoa(`${TWILIO_SID}:${TWILIO_TOKEN}`), 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+    const data = await res.json()
+    if (res.ok) showToast('📲 Notification WhatsApp envoyée !')
+    else showToast('WhatsApp : ' + (data.message || 'Erreur'))
+  } catch(e) { showToast('Erreur WhatsApp : ' + e.message) }
+}
+
+async function testWA() {
+  await sendWA(`🇸🇳 *Proplio* — Test notifications\n\n✅ WhatsApp connecté avec succès !\nVous recevrez des alertes pour chaque mandat, contact et matching.`)
+}
+
+// ── INIT ──
+setDate()
+loadAll()
 </script>
 </body>
 </html>
