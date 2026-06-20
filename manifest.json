@@ -1,0 +1,27 @@
+{
+  "name": "Proplio — CRM Immobilier Sénégal",
+  "short_name": "Proplio",
+  "description": "Le CRM immobilier des agents sénégalais",
+  "start_url": "/proplio/proplio-login.html",
+  "display": "standalone",
+  "background_color": "#06070A",
+  "theme_color": "#00D17A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "fr",
+  "dir": "ltr"
+}
