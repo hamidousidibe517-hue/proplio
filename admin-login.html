@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio Admin — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#06070A;--bg2:#0D0E14;--bg3:#13141C;--line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.12);--text:#EEEEF5;--text2:#8888A8;--text3:#44445A;--red:#FF4D6A;--red-dim:rgba(255,77,106,0.10)}
+    html,body{height:100%}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased}
+    .box{width:100%;max-width:360px;padding:24px}
+    .logo{font-size:1.1rem;font-weight:600;color:var(--text);text-align:center;margin-bottom:.25rem}
+    .logo em{font-style:normal;color:var(--red)}
+    .subtitle{font-size:.72rem;color:var(--text3);text-align:center;margin-bottom:2rem;letter-spacing:.06em;text-transform:uppercase}
+    .admin-badge{display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--red-dim);border:1px solid rgba(255,77,106,.2);border-radius:8px;padding:.6rem;margin-bottom:1.5rem;font-size:.75rem;color:var(--red);font-weight:600}
+    .card{background:var(--bg2);border-radius:12px;border:1px solid var(--line);padding:24px}
+    .card h2{font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:1.25rem}
+    .fgroup{margin-bottom:.85rem}
+    .fgroup label{display:block;font-size:.65rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+    .fgroup input{width:100%;padding:.65rem .9rem;background:var(--bg3);border:1px solid var(--line2);border-radius:8px;font-size:.85rem;font-family:'DM Mono',monospace;color:var(--text);outline:none;transition:.12s}
+    .fgroup input:focus{border-color:var(--red)}
+    .btn{width:100%;padding:.8rem;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;margin-top:.5rem}
+    .btn:hover{background:#FF6B82}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .msg{padding:.65rem .9rem;border-radius:7px;font-size:.75rem;margin-bottom:.75rem;display:none}
+    .msg.show{display:block}
+    .msg.error{background:var(--red-dim);border:1px solid rgba(255,77,106,.2);color:var(--red)}
+    .warn{font-size:.68rem;color:var(--text3);text-align:center;margin-top:1rem;line-height:1.6}
+  </style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">Prop<em>lio</em> Admin</div>
+  <div class="subtitle">Accès restreint · Personnel autorisé uniquement</div>
+  <div class="admin-badge">🔐 Zone d'administration sécurisée</div>
+  <div class="card">
+    <h2>Connexion administrateur</h2>
+    <div class="msg error" id="msg-error"></div>
+    <div class="fgroup">
+      <label>Identifiant admin</label>
+      <input type="text" id="admin-id" placeholder="admin@proplio.sn" autocomplete="off"/>
+    </div>
+    <div class="fgroup">
+      <label>Mot de passe</label>
+      <input type="password" id="admin-pwd" placeholder="••••••••••••" autocomplete="off"/>
+    </div>
+    <div class="fgroup">
+      <label>Code 2FA (6 chiffres)</label>
+      <input type="text" id="admin-2fa" placeholder="000000" maxlength="6" autocomplete="off"/>
+    </div>
+    <button class="btn" id="btn-login" onclick="doAdminLogin()">Accéder au panel →</button>
+  </div>
+  <p class="warn">⚠️ Toutes les connexions sont enregistrées et surveillées.<br/>Accès non autorisé passible de poursuites.</p>
+</div>
+<script>
+// Credentials admin (en production : utiliser Supabase Auth avec rôle SUPER_ADMIN)
+const ADMIN_CREDS={id:'admin@proplio.sn',pwd:'ProplioAdmin2026!',code:'123456'}
+
+function doAdminLogin(){
+  const id=document.getElementById('admin-id').value.trim()
+  const pwd=document.getElementById('admin-pwd').value
+  const code=document.getElementById('admin-2fa').value.trim()
+  const btn=document.getElementById('btn-login')
+
+  if(!id||!pwd||!code){showError('Tous les champs sont obligatoires.');return}
+
+  btn.disabled=true;btn.textContent='Vérification…'
+
+  setTimeout(()=>{
+    if(id===ADMIN_CREDS.id&&pwd===ADMIN_CREDS.pwd&&code===ADMIN_CREDS.code){
+      localStorage.setItem('proplio_admin','true')
+      localStorage.setItem('proplio_admin_ts',Date.now())
+      window.location.href='admin.html'
+    } else {
+      showError('Identifiants incorrects. Tentative enregistrée.')
+      btn.disabled=false;btn.textContent='Accéder au panel →'
+    }
+  },1500)
+}
+
+function showError(msg){
+  const el=document.getElementById('msg-error')
+  el.textContent=msg;el.classList.add('show')
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin()})
+
+// Vérifier si déjà connecté admin
+if(localStorage.getItem('proplio_admin')==='true'){
+  const ts=Number(localStorage.getItem('proplio_admin_ts')||0)
+  if(Date.now()-ts<4*60*60*1000)window.location.href='admin.html'
+}
+</script>
+</body>
+</html>
