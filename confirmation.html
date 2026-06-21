@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio — Confirmation de compte</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#06070A;--bg2:#0D0E14;--bg3:#13141C;--line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.12);--text:#EEEEF5;--text2:#8888A8;--text3:#44445A;--em:#00D17A;--em-dim:rgba(0,209,122,0.10);--red:#FF4D6A;--red-dim:rgba(255,77,106,0.10)}
+    html,body{height:100%}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;-webkit-font-smoothing:antialiased}
+    .box{width:100%;max-width:420px;text-align:center}
+    .logo{font-size:1.2rem;font-weight:600;color:var(--text);text-decoration:none;display:block;margin-bottom:2.5rem}
+    .logo em{font-style:normal;color:var(--em)}
+    .card{background:var(--bg2);border-radius:14px;border:1px solid var(--line);padding:36px 28px}
+    .icon{font-size:3.5rem;margin-bottom:1.25rem}
+    h1{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--text);margin-bottom:.75rem;letter-spacing:-.02em}
+    p{font-size:.875rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem}
+    .btn{display:block;width:100%;padding:.85rem;background:var(--em);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;text-decoration:none;text-align:center;margin-bottom:.75rem}
+    .btn:hover{background:#00E888}
+    .btn-ghost{display:block;width:100%;padding:.75rem;background:none;color:var(--text2);border:1px solid var(--line);border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none;transition:.15s;text-align:center}
+    .btn-ghost:hover{border-color:var(--line2);color:var(--text)}
+    .steps{display:flex;flex-direction:column;gap:.75rem;margin:1.5rem 0;text-align:left}
+    .step{display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg3);border-radius:8px;border:1px solid var(--line)}
+    .step-num{width:24px;height:24px;border-radius:6px;background:var(--em-dim);border:1px solid rgba(0,209,122,.2);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--em);flex-shrink:0}
+    .step-text{font-size:.78rem;color:var(--text2)}
+    .step-text strong{color:var(--text);font-weight:600}
+    /* États */
+    .state{display:none}
+    .state.active{display:block}
+    .msg{padding:.75rem 1rem;border-radius:8px;font-size:.78rem;margin-bottom:1rem;display:none}
+    .msg.show{display:block}
+    .msg.error{background:var(--red-dim);border:1px solid rgba(255,77,106,.2);color:var(--red)}
+    .msg.success{background:var(--em-dim);border:1px solid rgba(0,209,122,.2);color:var(--em)}
+  </style>
+</head>
+<body>
+<div class="box">
+  <a href="index.html" class="logo">Prop<em>lio</em> 🇸🇳</a>
+
+  <!-- ÉTAT : En attente de confirmation -->
+  <div class="card state active" id="state-pending">
+    <div class="icon">✉️</div>
+    <h1>Vérifiez votre email</h1>
+    <p>Un lien de confirmation a été envoyé à votre adresse email. Cliquez dessus pour activer votre compte.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Ouvrez votre boîte mail</strong><br/>Cherchez un email de Proplio</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Cliquez sur le lien</strong><br/>"Confirmer mon adresse email"</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Accédez à votre dashboard</strong><br/>Vous serez redirigé automatiquement</div></div>
+    </div>
+    <div class="msg error" id="msg-error"></div>
+    <div class="msg success" id="msg-resend"></div>
+    <button class="btn" onclick="resendEmail()">Renvoyer l'email de confirmation</button>
+    <a href="proplio-login.html" class="btn-ghost">Se connecter</a>
+    <p style="font-size:.72rem;color:var(--text3);margin-top:1rem;margin-bottom:0">Vérifiez aussi vos spams. L'email peut prendre 2-3 minutes.</p>
+  </div>
+
+  <!-- ÉTAT : Compte confirmé -->
+  <div class="card state" id="state-confirmed">
+    <div class="icon">🎉</div>
+    <h1>Compte activé !</h1>
+    <p>Votre compte Proplio est confirmé. Vous pouvez maintenant accéder à votre dashboard et commencer à gérer vos biens.</p>
+    <a href="proplio-dashboard.html" class="btn">Accéder à mon dashboard →</a>
+    <p style="font-size:.72rem;color:var(--text3);margin-top:1rem;margin-bottom:0">Redirection automatique dans <span id="countdown">5</span> secondes…</p>
+  </div>
+
+  <!-- ÉTAT : Erreur -->
+  <div class="card state" id="state-error">
+    <div class="icon">❌</div>
+    <h1>Lien invalide</h1>
+    <p>Ce lien de confirmation est invalide ou a expiré. Demandez un nouveau lien de confirmation.</p>
+    <a href="inscription.html" class="btn">Créer un nouveau compte</a>
+    <a href="proplio-login.html" class="btn-ghost">Se connecter</a>
+  </div>
+
+</div>
+<script>
+const SUPABASE_URL='https://nkpzcleluygjzqetwlju.supabase.co'
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+
+function showState(id){
+  document.querySelectorAll('.state').forEach(s=>s.classList.remove('active'))
+  document.getElementById('state-'+id).classList.add('active')
+}
+
+// Vérifier le hash de l'URL (token Supabase)
+const hash=new URLSearchParams(window.location.hash.substring(1))
+const token=hash.get('access_token')
+const type=hash.get('type')
+const error=hash.get('error')
+
+if(error){
+  showState('error')
+} else if(token && type==='signup'){
+  // Confirmation réussie
+  localStorage.setItem('proplio_token', token)
+  showState('confirmed')
+  // Countdown
+  let n=5
+  const interval=setInterval(()=>{
+    n--
+    const el=document.getElementById('countdown')
+    if(el)el.textContent=n
+    if(n<=0){clearInterval(interval);window.location.href='proplio-dashboard.html'}
+  },1000)
+} else if(token && type==='recovery'){
+  // Reset password
+  window.location.href='reset-password.html#access_token='+token+'&type=recovery'
+}
+
+async function resendEmail(){
+  const email=localStorage.getItem('proplio_pending_email')
+  if(!email){
+    document.getElementById('msg-error').textContent='Email introuvable. Veuillez vous réinscrire.'
+    document.getElementById('msg-error').classList.add('show')
+    return
+  }
+  try{
+    await fetch(`${SUPABASE_URL}/auth/v1/resend`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({type:'signup',email})
+    })
+    document.getElementById('msg-resend').textContent='✓ Email renvoyé ! Vérifiez votre boîte mail.'
+    document.getElementById('msg-resend').classList.add('show')
+  }catch(e){
+    document.getElementById('msg-error').textContent='Erreur. Réessayez.'
+    document.getElementById('msg-error').classList.add('show')
+  }
+}
+</script>
+</body>
+</html>
