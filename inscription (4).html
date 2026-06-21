@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio — Créer un compte</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#06070A;--bg2:#0D0E14;--bg3:#13141C;--bg4:#1A1B24;
+      --line:rgba(255,255,255,0.07);--line2:rgba(255,255,255,0.12);
+      --text:#EEEEF5;--text2:#8888A8;--text3:#44445A;
+      --em:#00D17A;--em-dim:rgba(0,209,122,0.10);
+      --gold:#F0B429;--red:#FF4D6A;
+    }
+    html,body{height:100%}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:grid;grid-template-columns:1fr 1fr;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+    /* GAUCHE */
+    .left{background:var(--bg2);border-right:1px solid var(--line);padding:44px 52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .left::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,209,122,0.06) 0%,transparent 70%);pointer-events:none}
+    .l-logo{font-size:1.2rem;font-weight:600;color:var(--text);text-decoration:none;position:relative;z-index:1}
+    .l-logo em{font-style:normal;color:var(--em)}
+    .l-body{position:relative;z-index:1;margin-top:52px}
+    .l-body h2{font-family:'DM Serif Display',serif;font-size:2.2rem;color:var(--text);line-height:1.15;margin-bottom:.85rem;letter-spacing:-.02em}
+    .l-body h2 em{font-style:normal;color:var(--em)}
+    .l-body p{font-size:.875rem;color:var(--text2);line-height:1.7;max-width:300px}
+    .steps{margin-top:2.5rem;display:flex;flex-direction:column;gap:1.25rem}
+    .step{display:flex;align-items:flex-start;gap:.85rem}
+    .step-num{width:26px;height:26px;border-radius:7px;background:var(--em-dim);border:1px solid rgba(0,209,122,.2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--em);flex-shrink:0;margin-top:2px}
+    .step-body h4{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:2px}
+    .step-body p{font-size:.75rem;color:var(--text3)}
+    .l-foot{position:relative;z-index:1;border-top:1px solid var(--line);padding-top:1.25rem}
+    .l-testi p{font-size:.78rem;color:var(--text2);font-style:italic;line-height:1.6;margin-bottom:.75rem}
+    .l-author{display:flex;align-items:center;gap:.6rem}
+    .l-av{width:30px;height:30px;border-radius:7px;background:var(--em-dim);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--em)}
+    .l-name{font-size:.75rem;font-weight:600;color:var(--text)}
+    .l-role{font-size:.65rem;color:var(--text3)}
+
+    /* DROITE */
+    .right{display:flex;align-items:center;justify-content:center;padding:44px 5%;background:var(--bg)}
+    .box{width:100%;max-width:420px}
+    .box-head{margin-bottom:2rem}
+    .box-head h1{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--text);margin-bottom:.35rem;letter-spacing:-.02em}
+    .box-head p{font-size:.82rem;color:var(--text2)}
+    .box-head p a{color:var(--em);text-decoration:none;font-weight:500}
+
+    /* PLAN SELECTOR */
+    .plan-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1.75rem;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:4px}
+    .plan-opt{padding:.6rem;border-radius:7px;text-align:center;cursor:pointer;transition:.12s;border:1px solid transparent}
+    .plan-opt:hover{background:var(--bg3)}
+    .plan-opt.selected{background:var(--bg3);border-color:rgba(0,209,122,.2)}
+    .plan-opt-name{font-size:.72rem;font-weight:600;color:var(--text);display:block}
+    .plan-opt-price{font-size:.62rem;color:var(--text3);margin-top:1px}
+    .plan-opt.selected .plan-opt-name{color:var(--em)}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .fgroup{margin-bottom:.9rem}
+    .fgroup label{display:block;font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem}
+    .fgroup input,.fgroup select{width:100%;padding:.65rem .9rem;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;font-size:.85rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:.12s}
+    .fgroup input:focus,.fgroup select:focus{border-color:var(--em);background:var(--bg3)}
+    .fgroup select option{background:var(--bg2)}
+    .fgroup input::placeholder{color:var(--text3)}
+    .strength-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden}
+    .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0%}
+
+    /* TERMS */
+    .terms{display:flex;align-items:flex-start;gap:.6rem;margin:.75rem 0 1.25rem;font-size:.75rem;color:var(--text2)}
+    .terms input{margin-top:2px;accent-color:var(--em)}
+    .terms a{color:var(--em);text-decoration:none}
+
+    /* BTN */
+    .btn-submit{width:100%;padding:.85rem;background:var(--em);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s}
+    .btn-submit:hover{background:#00E888}
+    .btn-submit:disabled{opacity:.5;cursor:not-allowed}
+
+    /* DIVIDER */
+    .divider{display:flex;align-items:center;gap:.75rem;margin:.75rem 0}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+    .divider span{font-size:.7rem;color:var(--text3)}
+
+    /* SOCIAL */
+    .soc-btns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+    .soc-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.6rem;border-radius:8px;border:1px solid var(--line2);background:var(--bg2);font-size:.8rem;font-weight:500;color:var(--text2);cursor:pointer;transition:.12s;font-family:'DM Sans',sans-serif}
+    .soc-btn:hover{background:var(--bg3);color:var(--text);border-color:var(--line2)}
+
+    /* MESSAGES */
+    .msg{padding:.75rem 1rem;border-radius:8px;font-size:.78rem;margin-bottom:.85rem;display:none}
+    .msg.show{display:block}
+    .msg.error{background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.2);color:var(--red)}
+    .msg.success{background:var(--em-dim);border:1px solid rgba(0,209,122,.2);color:var(--em)}
+
+    /* TRIAL BADGE */
+    .trial-badge{display:flex;align-items:center;gap:.6rem;background:var(--em-dim);border:1px solid rgba(0,209,122,.15);border-radius:8px;padding:.65rem .9rem;margin-bottom:1.5rem;font-size:.75rem;color:var(--em)}
+    .trial-badge strong{font-weight:700}
+
+    @media(max-width:780px){body{grid-template-columns:1fr}.left{display:none}.right{padding:32px 24px}}
+  </style>
+</head>
+<body>
+
+<!-- GAUCHE -->
+<div class="left">
+  <a href="index.html" class="l-logo">Prop<em>lio</em> 🇸🇳</a>
+  <div class="l-body">
+    <h2>Démarrez en<br/><em>15 minutes</em></h2>
+    <p>Pas de formation. Pas d'intégration complexe. Vous créez votre compte et vous partez.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Créez votre compte</h4><p>2 minutes, sans carte bancaire</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Ajoutez vos mandats</h4><p>Importez vos biens et contacts existants</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Vendez plus vite</h4><p>Matching auto, pipeline, agenda — tout en un</p></div></div>
+    </div>
+  </div>
+  <div class="l-foot">
+    <div class="l-testi">
+      <p>«&nbsp;J'ai été opérationnel en moins de 10 minutes. Le matching m'a permis de vendre un terrain à Thiès en 3 jours.&nbsp;»</p>
+      <div class="l-author">
+        <div class="l-av">AD</div>
+        <div><div class="l-name">Amadou Diop</div><div class="l-role">Agent · Dakar Plateau</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DROITE -->
+<div class="right">
+  <div class="box">
+    <div class="box-head">
+      <h1>Créer un compte</h1>
+      <p>Déjà inscrit ? <a href="proplio-login.html">Se connecter</a></p>
+    </div>
+
+    <div class="trial-badge">
+      <span>🎁</span>
+      <span><strong>14 jours gratuits</strong> — Sans carte bancaire requise</span>
+    </div>
+
+    <!-- PLAN SELECTOR -->
+    <div class="plan-selector" id="plan-selector">
+      <div class="plan-opt selected" onclick="selectPlan('SOLO',this)">
+        <span class="plan-opt-name">Solo</span>
+        <span class="plan-opt-price">15 000 F/mois</span>
+      </div>
+      <div class="plan-opt" onclick="selectPlan('PRO',this)">
+        <span class="plan-opt-name">Pro ⭐</span>
+        <span class="plan-opt-price">20 000 F/mois</span>
+      </div>
+      <div class="plan-opt" onclick="selectPlan('AGENCE',this)">
+        <span class="plan-opt-name">Agence</span>
+        <span class="plan-opt-price">115 000 F/mois</span>
+      </div>
+    </div>
+
+    <div class="msg error" id="msg-error"></div>
+    <div class="msg success" id="msg-success"></div>
+
+    <!-- FORM -->
+    <div class="form-grid">
+      <div class="fgroup">
+        <label>Prénom</label>
+        <input type="text" id="r-prenom" placeholder="Moussa" autocomplete="given-name"/>
+      </div>
+      <div class="fgroup">
+        <label>Nom</label>
+        <input type="text" id="r-nom" placeholder="Diallo" autocomplete="family-name"/>
+      </div>
+    </div>
+    <div class="fgroup">
+      <label>Nom de votre agence</label>
+      <input type="text" id="r-agence" placeholder="Teranga Immo"/>
+    </div>
+    <div class="fgroup">
+      <label>Email professionnel</label>
+      <input type="email" id="r-email" placeholder="moussa@teranga-immo.sn" autocomplete="email"/>
+    </div>
+    <div class="fgroup">
+      <label>Téléphone / WhatsApp</label>
+      <input type="tel" id="r-phone" placeholder="+221 77 000 00 00"/>
+    </div>
+    <div class="fgroup">
+      <label>Mot de passe</label>
+      <input type="password" id="r-pwd" placeholder="Min. 8 car., 1 majuscule, 1 chiffre" oninput="checkStrength(this.value)"/>
+      <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+    </div>
+    <div class="fgroup">
+      <label>Ville principale</label>
+      <select id="r-ville">
+        <option value="Dakar">Dakar</option>
+        <option value="Thiès">Thiès</option>
+        <option value="Saint-Louis">Saint-Louis</option>
+        <option value="Mbour">Mbour</option>
+        <option value="Ziguinchor">Ziguinchor</option>
+        <option value="Autre">Autre</option>
+      </select>
+    </div>
+
+    <label class="terms">
+      <input type="checkbox" id="r-terms"/>
+      J'accepte les <a href="#">Conditions d'utilisation</a> et la <a href="#">Politique de confidentialité</a>
+    </label>
+
+    <button class="btn-submit" id="btn-submit" onclick="doRegister()">Créer mon compte gratuit →</button>
+
+    <div class="divider"><span>ou continuer avec</span></div>
+    <div class="soc-btns">
+      <button class="soc-btn" onclick="showMsg('error','Google OAuth bientôt disponible')">🔵 Google</button>
+      <button class="soc-btn" onclick="showMsg('error','Facebook bientôt disponible')">📘 Facebook</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL='https://nkpzcleluygjzqetwlju.supabase.co'
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+
+let selectedPlan='SOLO'
+
+function selectPlan(plan,el){
+  selectedPlan=plan
+  document.querySelectorAll('.plan-opt').forEach(o=>o.classList.remove('selected'))
+  el.classList.add('selected')
+}
+
+function checkStrength(pwd){
+  let score=0
+  if(pwd.length>=8)score++
+  if(/[A-Z]/.test(pwd))score++
+  if(/[0-9]/.test(pwd))score++
+  if(/[^A-Za-z0-9]/.test(pwd))score++
+  const fill=document.getElementById('strength-fill')
+  const colors=['var(--red)','var(--red)','var(--gold)','var(--em)','var(--em)']
+  fill.style.width=(score*25)+'%'
+  fill.style.background=colors[score]||'var(--red)'
+}
+
+function showMsg(type,msg){
+  document.getElementById('msg-error').classList.remove('show')
+  document.getElementById('msg-success').classList.remove('show')
+  const el=document.getElementById('msg-'+type)
+  el.textContent=msg
+  el.classList.add('show')
+}
+
+async function doRegister(){
+  const prenom=document.getElementById('r-prenom').value.trim()
+  const nom=document.getElementById('r-nom').value.trim()
+  const agence=document.getElementById('r-agence').value.trim()
+  const email=document.getElementById('r-email').value.trim()
+  const phone=document.getElementById('r-phone').value.trim()
+  const pwd=document.getElementById('r-pwd').value
+  const ville=document.getElementById('r-ville').value
+  const terms=document.getElementById('r-terms').checked
+
+  if(!prenom||!nom||!email||!pwd){showMsg('error','Tous les champs obligatoires doivent être remplis.');return}
+  if(pwd.length<8){showMsg('error','Mot de passe trop court (minimum 8 caractères).');return}
+  if(!/[A-Z]/.test(pwd)||!/[0-9]/.test(pwd)){showMsg('error','Le mot de passe doit contenir au moins 1 majuscule et 1 chiffre.');return}
+  if(!terms){showMsg('error','Veuillez accepter les conditions d\'utilisation.');return}
+
+  const btn=document.getElementById('btn-submit')
+  btn.disabled=true;btn.textContent='Création du compte…'
+
+  try{
+    const res=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pwd,data:{prenom,nom,agence,phone,ville,plan:selectedPlan}})
+    })
+    const data=await res.json()
+
+    if(!res.ok){showMsg('error',data.error_description||data.msg||'Erreur lors de la création.');return}
+
+    if(data.access_token){
+      localStorage.setItem('proplio_token',data.access_token)
+      localStorage.setItem('proplio_user',JSON.stringify(data.user))
+      localStorage.setItem('proplio_plan',selectedPlan)
+
+      // Créer org dans Supabase
+      await fetch(`${SUPABASE_URL}/rest/v1/organizations`,{
+        method:'POST',
+        headers:{'apikey':KEY,'Authorization':'Bearer '+data.access_token,'Content-Type':'application/json','Prefer':'return=representation'},
+        body:JSON.stringify({
+          name:agence||`${prenom} ${nom} Immo`,
+          slug:(agence||`${prenom}-${nom}`).toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')+'-'+Math.random().toString(36).substring(2,7),
+          plan:selectedPlan,ville
+        })
+      })
+
+      showMsg('success','✓ Compte créé ! Redirection vers le paiement…')
+      setTimeout(()=>window.location.href='paiement.html?plan='+selectedPlan,1500)
+    } else {
+      showMsg('success','✉️ Vérifiez votre email pour confirmer votre compte.')
+    }
+  }catch(e){showMsg('error','Erreur réseau: '+e.message)}
+  finally{btn.disabled=false;btn.textContent='Créer mon compte gratuit →'}
+}
+
+// Vérifier si déjà connecté
+const t=localStorage.getItem('proplio_token')
+if(t)window.location.href='proplio-dashboard.html'
+</script>
+</body>
+</html>
