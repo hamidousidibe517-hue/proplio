@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio — Mon espace de travail</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#00C875"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:       #080B10;
+      --s1:       #0E1219;
+      --s2:       #141820;
+      --s3:       #1C2230;
+      --s4:       #242C3C;
+      --rim:      rgba(255,255,255,0.055);
+      --rim2:     rgba(255,255,255,0.09);
+      --ink:      #E4EAF4;
+      --ink2:     #7A8BA8;
+      --ink3:     #3D4E68;
+      --accent:   #00C875;
+      --acc-dim:  rgba(0,200,117,0.09);
+      --acc-glow: rgba(0,200,117,0.20);
+      --amber:    #F5A623;
+      --amb-dim:  rgba(245,166,35,0.09);
+      --rose:     #F0506E;
+      --rose-dim: rgba(240,80,110,0.09);
+      --sky:      #3B9EFF;
+      --sky-dim:  rgba(59,158,255,0.09);
+      --violet:   #8B5CF6;
+      --vio-dim:  rgba(139,92,246,0.09);
+      --sw:       228px;
+      --r:        10px;
+    }
+    html,body{height:100%;background:var(--bg)}
+    body{font-family:'Inter',sans-serif;color:var(--ink);display:flex;-webkit-font-smoothing:antialiased;font-size:14px}
+
+    /* ══ SIDEBAR ══ */
+    .sb{
+      width:var(--sw);flex-shrink:0;
+      background:var(--s1);
+      border-right:1px solid var(--rim);
+      display:flex;flex-direction:column;
+      position:fixed;inset:0 auto 0 0;z-index:60;
+    }
+    .sb-top{padding:20px 16px 16px;border-bottom:1px solid var(--rim)}
+    .sb-logo{display:flex;align-items:center;gap:9px}
+    .sb-logo-mark{
+      width:28px;height:28px;border-radius:7px;
+      background:linear-gradient(135deg,var(--accent) 0%,#00A05E 100%);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.75rem;font-weight:800;color:#000;letter-spacing:-.02em;flex-shrink:0;
+    }
+    .sb-logo-text{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+    .sb-logo-text em{font-style:normal;color:var(--accent)}
+    .sb-nav{padding:12px 10px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+    .sb-sep{height:1px;background:var(--rim);margin:8px 6px}
+    .sb-grp-label{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);padding:6px 8px 4px}
+    .nav-btn{
+      display:flex;align-items:center;gap:9px;
+      padding:7px 10px;border-radius:8px;
+      color:var(--ink2);font-size:.8rem;font-weight:500;
+      cursor:pointer;transition:all .12s;border:1px solid transparent;
+      text-decoration:none;
+    }
+    .nav-btn:hover{background:var(--s2);color:var(--ink)}
+    .nav-btn.on{background:var(--acc-dim);color:var(--accent);border-color:rgba(0,200,117,.12)}
+    .nav-icon{width:15px;text-align:center;flex-shrink:0;opacity:.7;font-style:normal}
+    .nav-btn.on .nav-icon{opacity:1}
+    .nav-pill{
+      margin-left:auto;min-width:18px;height:18px;
+      background:var(--rose);color:#fff;
+      font-size:.58rem;font-weight:700;
+      padding:0 5px;border-radius:20px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .sb-bot{padding:12px 10px;border-top:1px solid var(--rim)}
+    .user-row{display:flex;align-items:center;gap:9px}
+    .user-av{
+      width:30px;height:30px;border-radius:8px;
+      background:linear-gradient(135deg,var(--accent),#00805C);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.62rem;font-weight:700;color:#000;flex-shrink:0;
+    }
+    .user-name{font-size:.75rem;font-weight:600;color:var(--ink);line-height:1.2}
+    .user-plan{font-size:.62rem;color:var(--accent)}
+    .logout-btn{
+      margin-left:auto;width:26px;height:26px;
+      background:none;border:1px solid var(--rim);border-radius:7px;
+      color:var(--ink3);cursor:pointer;font-size:.8rem;
+      display:flex;align-items:center;justify-content:center;
+      transition:.12s;
+    }
+    .logout-btn:hover{color:var(--rose);border-color:var(--rose-dim);background:var(--rose-dim)}
+
+    /* ══ MAIN ══ */
+    .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh;overflow:hidden}
+
+    /* TOPBAR */
+    .topbar{
+      background:var(--s1);border-bottom:1px solid var(--rim);
+      padding:0 24px;height:52px;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:50;
+    }
+    .topbar-l{display:flex;align-items:baseline;gap:.6rem}
+    .topbar-l h1{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+    .topbar-l .breadcrumb{font-size:.72rem;color:var(--ink3)}
+    .topbar-r{display:flex;align-items:center;gap:6px}
+    .search{
+      display:flex;align-items:center;gap:6px;
+      background:var(--s2);border:1px solid var(--rim);
+      border-radius:8px;padding:5px 11px;
+      transition:.12s;
+    }
+    .search:focus-within{border-color:var(--rim2)}
+    .search input{
+      border:none;background:none;outline:none;
+      font-size:.75rem;color:var(--ink);width:150px;
+      font-family:'Inter',sans-serif;
+    }
+    .search input::placeholder{color:var(--ink3)}
+    .search-icon{color:var(--ink3);font-size:.75rem}
+    .top-btn{
+      width:30px;height:30px;border-radius:7px;
+      background:var(--s2);border:1px solid var(--rim);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:.8rem;transition:.12s;position:relative;
+    }
+    .top-btn:hover{background:var(--s3);border-color:var(--rim2)}
+    .notif-pip{
+      position:absolute;top:4px;right:4px;
+      width:6px;height:6px;border-radius:50%;
+      background:var(--rose);border:1.5px solid var(--s1);
+    }
+
+    /* PAGE */
+    .page{padding:22px 24px;flex:1;overflow-y:auto}
+    .pane{display:none}
+    .pane.on{display:block}
+
+    /* ══ KPI STRIP ══ */
+    .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    .kpi{
+      background:var(--s1);border-radius:var(--r);border:1px solid var(--rim);
+      padding:16px 18px;cursor:default;transition:.15s;
+    }
+    .kpi:hover{border-color:var(--rim2);background:var(--s2)}
+    .kpi-row1{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+    .kpi-dot{width:8px;height:8px;border-radius:50%;margin-top:3px}
+    .kpi-chip{font-size:.6rem;font-weight:600;padding:2px 7px;border-radius:20px;font-family:'Inter',monospace}
+    .chip-g{background:var(--acc-dim);color:var(--accent)}
+    .chip-r{background:var(--rose-dim);color:var(--rose)}
+    .chip-a{background:var(--amb-dim);color:var(--amber)}
+    .chip-b{background:var(--sky-dim);color:var(--sky)}
+    .kpi-num{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:1}
+    .kpi-label{font-size:.68rem;color:var(--ink3);margin-top:5px;font-weight:500}
+
+    /* ══ GRID ══ */
+    .g2{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+
+    /* ══ CARD ══ */
+    .card{background:var(--s1);border-radius:var(--r);border:1px solid var(--rim);padding:18px}
+    .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .card-h h2{font-size:.8rem;font-weight:600;color:var(--ink)}
+    .card-link{font-size:.7rem;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500}
+    .card-link:hover{opacity:.7}
+
+    /* ══ BAR CHART ══ */
+    .chart{display:flex;flex-direction:column;gap:8px}
+    .bar-r{display:flex;align-items:center;gap:9px}
+    .bar-m{font-size:.62rem;color:var(--ink3);width:22px;flex-shrink:0;font-variant-numeric:tabular-nums}
+    .bar-t{flex:1;height:5px;background:var(--s3);border-radius:20px;overflow:hidden}
+    .bar-f{height:100%;border-radius:20px;background:var(--accent);transition:width .7s cubic-bezier(.4,0,.2,1)}
+    .bar-f.a{background:var(--amber)}
+    .bar-v{font-size:.62rem;color:var(--ink3);width:46px;text-align:right;font-variant-numeric:tabular-nums}
+
+    /* ══ ROW ITEM ══ */
+    .row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--rim)}
+    .row:last-child{border-bottom:none}
+    .av{
+      width:30px;height:30px;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.6rem;font-weight:700;color:#fff;flex-shrink:0;
+      font-family:'Syne',sans-serif;
+    }
+    .row-name{font-size:.78rem;font-weight:500;color:var(--ink)}
+    .row-sub{font-size:.68rem;color:var(--ink3);margin-top:1px}
+    .row-del{
+      margin-left:auto;width:24px;height:24px;
+      background:none;border:none;cursor:pointer;
+      color:var(--ink3);border-radius:6px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.75rem;transition:.12s;opacity:.4;
+    }
+    .row-del:hover{opacity:1;color:var(--rose);background:var(--rose-dim)}
+
+    /* ══ CHIP BADGES ══ */
+    .chip{font-size:.6rem;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .ch-g{background:var(--acc-dim);color:var(--accent)}
+    .ch-a{background:var(--amb-dim);color:var(--amber)}
+    .ch-r{background:var(--rose-dim);color:var(--rose)}
+    .ch-b{background:var(--sky-dim);color:var(--sky)}
+    .ch-v{background:var(--vio-dim);color:var(--violet)}
+    .ch-n{background:var(--s3);color:var(--ink3)}
+
+    /* ══ TABLE ══ */
+    .tbl{width:100%;border-collapse:collapse}
+    .tbl th{text-align:left;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:0 10px 10px;border-bottom:1px solid var(--rim)}
+    .tbl td{padding:10px;border-bottom:1px solid var(--rim);font-size:.75rem;color:var(--ink2);vertical-align:middle}
+    .tbl td:first-child{color:var(--ink);font-weight:500}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl tr:hover td{background:var(--s2)}
+    .tbl-num{font-variant-numeric:tabular-nums;font-size:.7rem}
+
+    /* ══ PIPELINE ══ */
+    .pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .pipe-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .pipe-col-title{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    .pipe-col-cnt{
+      font-size:.58rem;font-weight:700;
+      width:17px;height:17px;border-radius:5px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .pipe-card{
+      background:var(--s2);border-radius:8px;border:1px solid var(--rim);
+      padding:10px;margin-bottom:6px;cursor:pointer;transition:.12s;
+    }
+    .pipe-card:hover{background:var(--s3);border-color:var(--rim2);transform:translateY(-1px)}
+    .pipe-card-name{font-size:.74rem;font-weight:500;color:var(--ink);margin-bottom:3px;line-height:1.3}
+    .pipe-card-sub{font-size:.64rem;color:var(--ink3);margin-bottom:7px}
+    .pipe-card-price{font-size:.7rem;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+    .pipe-empty{font-size:.65rem;color:var(--ink3);text-align:center;padding:.85rem;border:1px dashed var(--rim);border-radius:7px}
+
+    /* ══ AGENDA ══ */
+    .agenda-row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--rim)}
+    .agenda-row:last-child{border-bottom:none}
+    .agenda-cal{
+      background:var(--acc-dim);border:1px solid rgba(0,200,117,.15);
+      border-radius:8px;padding:5px 9px;text-align:center;flex-shrink:0;min-width:44px;
+    }
+    .agenda-day{font-size:.55rem;font-weight:700;text-transform:uppercase;color:var(--accent);opacity:.8;letter-spacing:.05em}
+    .agenda-num{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);line-height:1}
+    .agenda-info{flex:1}
+    .agenda-title{font-size:.76rem;font-weight:500;color:var(--ink);margin-bottom:3px}
+    .agenda-sub{font-size:.66rem;color:var(--ink3)}
+
+    /* ══ MATCHING ══ */
+    .match-card{
+      display:flex;align-items:center;gap:11px;
+      padding:12px;border-radius:9px;
+      background:var(--s2);border:1px solid var(--rim);
+      margin-bottom:7px;transition:.12s;
+    }
+    .match-card:hover{border-color:var(--rim2);background:var(--s3)}
+    .match-score{
+      width:40px;height:40px;border-radius:8px;flex-shrink:0;
+      background:var(--acc-dim);border:1px solid rgba(0,200,117,.15);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--accent);
+    }
+    .match-info{flex:1}
+    .match-title{font-size:.76rem;font-weight:500;color:var(--ink);margin-bottom:3px}
+    .match-sub{font-size:.66rem;color:var(--ink3)}
+    .btn-notify{
+      background:var(--acc-dim);color:var(--accent);
+      border:1px solid rgba(0,200,117,.15);
+      padding:4px 11px;border-radius:6px;
+      font-size:.68rem;font-weight:600;cursor:pointer;
+      font-family:'Inter',sans-serif;transition:.12s;white-space:nowrap;
+    }
+    .btn-notify:hover{background:var(--accent);color:#000}
+
+    /* ══ MODAL ══ */
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.6);
+      z-index:200;display:none;align-items:center;justify-content:center;
+      backdrop-filter:blur(6px);
+    }
+    .overlay.on{display:flex}
+    .modal{
+      background:var(--s1);border-radius:14px;border:1px solid var(--rim2);
+      padding:24px;width:100%;max-width:400px;
+      box-shadow:0 40px 80px rgba(0,0,0,.6);
+      animation:pop .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes pop{from{transform:scale(.95);opacity:0}to{transform:none;opacity:1}}
+    .modal-h{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:18px;letter-spacing:-.01em}
+    .fld{margin-bottom:10px}
+    .fld label{display:block;font-size:.62rem;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+    .fld input,.fld select{
+      width:100%;padding:.58rem .85rem;
+      background:var(--s2);border:1px solid var(--rim2);
+      border-radius:8px;font-size:.8rem;
+      font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:.12s;
+    }
+    .fld input:focus,.fld select:focus{border-color:var(--accent);background:var(--s3)}
+    .fld input::placeholder{color:var(--ink3)}
+    .fld select option{background:var(--s2)}
+    .modal-btns{display:flex;gap:8px;margin-top:16px}
+    .btn-cancel{
+      flex:1;padding:.65rem;border-radius:8px;
+      background:var(--s2);border:1px solid var(--rim);
+      font-size:.78rem;font-weight:500;cursor:pointer;
+      color:var(--ink2);font-family:'Inter',sans-serif;transition:.12s;
+    }
+    .btn-cancel:hover{background:var(--s3);color:var(--ink)}
+    .btn-save{
+      flex:2;padding:.65rem;border-radius:8px;
+      background:var(--accent);border:none;
+      font-size:.78rem;font-weight:700;color:#000;
+      cursor:pointer;font-family:'Inter',sans-serif;transition:.12s;
+    }
+    .btn-save:hover{background:#00E888}
+    .btn-save:disabled{opacity:.4;cursor:not-allowed}
+
+    /* ══ ADD BTN ══ */
+    .btn-add{
+      background:var(--accent);color:#000;border:none;
+      padding:5px 13px;border-radius:7px;
+      font-size:.72rem;font-weight:700;cursor:pointer;
+      font-family:'Inter',sans-serif;transition:.12s;
+    }
+    .btn-add:hover{background:#00E888}
+
+    /* ══ TOAST ══ */
+    .toast{
+      position:fixed;bottom:18px;right:18px;z-index:400;
+      background:var(--s2);color:var(--ink);
+      border:1px solid var(--rim2);
+      padding:9px 15px;border-radius:9px;
+      font-size:.75rem;font-weight:500;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);
+      transform:translateY(60px);opacity:0;transition:.22s;
+      max-width:280px;
+    }
+    .toast.on{transform:none;opacity:1}
+
+    /* ══ EMPTY ══ */
+    .empty{text-align:center;padding:3rem 1rem;color:var(--ink3)}
+    .empty-icon{font-size:2rem;margin-bottom:.65rem;opacity:.3}
+    .empty p{font-size:.75rem;line-height:1.6}
+    .empty .cta{display:inline-block;margin-top:.85rem;background:var(--acc-dim);color:var(--accent);border:1px solid rgba(0,200,117,.15);padding:.45rem 1rem;border-radius:7px;font-size:.72rem;font-weight:600;cursor:pointer}
+
+    /* ══ LOADING ══ */
+    .ld{text-align:center;padding:2.5rem;color:var(--ink3);font-size:.75rem}
+    .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--rim2);border-top-color:var(--accent);border-radius:50%;animation:spin .55s linear infinite;margin-right:7px;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ══ SCROLLBAR ══ */
+    ::-webkit-scrollbar{width:3px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:3px}
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:960px){
+      .kpi-strip{grid-template-columns:1fr 1fr}
+      .g2,.g3,.pipe{grid-template-columns:1fr}
+    }
+    @media(max-width:680px){
+      .sb{width:52px}
+      .sb-logo-text,.sb-grp-label,.nav-btn span:not(.nav-icon),.user-name,.user-plan{display:none}
+      .nav-btn{justify-content:center;padding:8px}
+      .main{margin-left:52px}
+      .page{padding:14px}
+      .topbar{padding:0 14px}
+      .kpi-strip{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sb">
+  <div class="sb-top">
+    <div class="sb-logo">
+      <div class="sb-logo-mark">P</div>
+      <div class="sb-logo-text">Prop<em>lio</em></div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-grp-label">Principal</div>
+    <div class="nav-btn on" onclick="go('dash',this)"><em class="nav-icon">⬡</em><span>Tableau de bord</span></div>
+    <div class="nav-btn" onclick="go('biens',this)"><em class="nav-icon">◈</em><span>Mes biens</span><span class="nav-pill" id="pill-biens">0</span></div>
+    <div class="nav-btn" onclick="go('contacts',this)"><em class="nav-icon">◉</em><span>Contacts</span></div>
+    <div class="nav-btn" onclick="go('dossiers',this)"><em class="nav-icon">⋯</em><span>Suivi dossiers</span></div>
+    <div class="nav-btn" onclick="go('agenda',this)"><em class="nav-icon">◷</em><span>Agenda</span></div>
+    <div class="sb-sep"></div>
+    <div class="sb-grp-label">Analyse</div>
+    <div class="nav-btn" onclick="go('rapprochement',this)"><em class="nav-icon">◎</em><span>Rapprochement</span></div>
+    <div class="nav-btn" onclick="go('stats',this)"><em class="nav-icon">▲</em><span>Statistiques</span></div>
+  </nav>
+
+  <div class="sb-bot">
+    <div class="user-row">
+      <div class="user-av" id="u-av">MD</div>
+      <div><div class="user-name" id="u-name">Mon compte</div><div class="user-plan">Plan Pro</div></div>
+      <button class="logout-btn" onclick="doOut()" title="Déconnexion">↪</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-l">
+      <h1 id="pg-h">Tableau de bord</h1>
+      <span class="breadcrumb" id="pg-sub"></span>
+    </div>
+    <div class="topbar-r">
+      <div class="search">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="Rechercher…" oninput="doSearch(this.value)"/>
+      </div>
+      <div class="top-btn" onclick="loadAll()" title="Actualiser">↺</div>
+      <div class="top-btn" title="Notifications">○<div class="notif-pip"></div></div>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- ── TABLEAU DE BORD ── -->
+    <div class="pane on" id="pane-dash">
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-row1"><div class="kpi-dot" style="background:var(--accent)"></div><span class="kpi-chip chip-g" id="kpi-b-chip">—</span></div>
+          <div class="kpi-num" id="kpi-biens">—</div><div class="kpi-label">Biens actifs</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-row1"><div class="kpi-dot" style="background:var(--amber)"></div><span class="kpi-chip chip-a">FCFA</span></div>
+          <div class="kpi-num" id="kpi-ca">—</div><div class="kpi-label">Commissions</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-row1"><div class="kpi-dot" style="background:var(--sky)"></div><span class="kpi-chip chip-b" id="kpi-c-chip">—</span></div>
+          <div class="kpi-num" id="kpi-contacts">—</div><div class="kpi-label">Contacts</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-row1"><div class="kpi-dot" style="background:var(--rose)"></div><span class="kpi-chip chip-r" id="kpi-o-chip">—</span></div>
+          <div class="kpi-num" id="kpi-offres">—</div><div class="kpi-label">Offres en cours</div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><h2>CA mensuel (FCFA)</h2><span class="card-link">2026</span></div>
+          <div class="chart">
+            <div class="bar-r"><span class="bar-m">Jan</span><div class="bar-t"><div class="bar-f" style="width:55%"></div></div><span class="bar-v">8,2M</span></div>
+            <div class="bar-r"><span class="bar-m">Fév</span><div class="bar-t"><div class="bar-f" style="width:40%"></div></div><span class="bar-v">6,0M</span></div>
+            <div class="bar-r"><span class="bar-m">Mar</span><div class="bar-t"><div class="bar-f" style="width:75%"></div></div><span class="bar-v">11,3M</span></div>
+            <div class="bar-r"><span class="bar-m">Avr</span><div class="bar-t"><div class="bar-f a" style="width:65%"></div></div><span class="bar-v">9,8M</span></div>
+            <div class="bar-r"><span class="bar-m">Mai</span><div class="bar-t"><div class="bar-f" style="width:82%"></div></div><span class="bar-v">12,3M</span></div>
+            <div class="bar-r"><span class="bar-m">Jun</span><div class="bar-t"><div class="bar-f a" style="width:96%"></div></div><span class="bar-v">14,5M</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Contacts récents</h2><button class="card-link" onclick="go('contacts',null)">Voir →</button></div>
+          <div id="dash-contacts"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>Derniers biens</h2><button class="card-link" onclick="go('biens',null)">Voir tous →</button></div>
+        <div id="dash-biens"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- ── BIENS ── -->
+    <div class="pane" id="pane-biens">
+      <div class="card">
+        <div class="card-h"><h2 id="biens-count">Mes biens</h2><button class="btn-add" onclick="openM('bien')">+ Nouveau bien</button></div>
+        <div id="biens-list"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- ── CONTACTS ── -->
+    <div class="pane" id="pane-contacts">
+      <div class="card">
+        <div class="card-h"><h2 id="contacts-count">Contacts</h2><button class="btn-add" onclick="openM('contact')">+ Ajouter</button></div>
+        <div id="contacts-list"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- ── DOSSIERS ── -->
+    <div class="pane" id="pane-dossiers">
+      <div class="card">
+        <div class="card-h"><h2>Suivi des dossiers</h2><button class="btn-add" onclick="openM('dossier')">+ Nouveau dossier</button></div>
+        <div class="pipe">
+          <div>
+            <div class="pipe-col-hdr"><span class="pipe-col-title" style="color:var(--ink3)">Prospection</span><span class="pipe-col-cnt" id="cnt-PROSPECTION" style="background:var(--s3);color:var(--ink3)">0</span></div>
+            <div id="pipe-PROSPECTION"></div>
+          </div>
+          <div>
+            <div class="pipe-col-hdr"><span class="pipe-col-title" style="color:var(--sky)">Visite</span><span class="pipe-col-cnt" id="cnt-VISITE" style="background:var(--sky-dim);color:var(--sky)">0</span></div>
+            <div id="pipe-VISITE"></div>
+          </div>
+          <div>
+            <div class="pipe-col-hdr"><span class="pipe-col-title" style="color:var(--amber)">Offre</span><span class="pipe-col-cnt" id="cnt-OFFRE" style="background:var(--amb-dim);color:var(--amber)">0</span></div>
+            <div id="pipe-OFFRE"></div>
+          </div>
+          <div>
+            <div class="pipe-col-hdr"><span class="pipe-col-title" style="color:var(--accent)">Acte notarié</span><span class="pipe-col-cnt" id="cnt-ACTE_NOTARIE" style="background:var(--acc-dim);color:var(--accent)">0</span></div>
+            <div id="pipe-ACTE_NOTARIE"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AGENDA ── -->
+    <div class="pane" id="pane-agenda">
+      <div class="card">
+        <div class="card-h"><h2>Agenda — Visites planifiées</h2><button class="btn-add" onclick="openM('visite')">+ Planifier visite</button></div>
+        <div id="agenda-list"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- ── RAPPROCHEMENT ── -->
+    <div class="pane" id="pane-rapprochement">
+      <div class="card">
+        <div class="card-h"><h2>Rapprochement automatique</h2><button class="btn-add" onclick="doMatch()">Lancer l'analyse</button></div>
+        <p style="font-size:.72rem;color:var(--ink3);margin-bottom:14px;line-height:1.6">Proplio analyse vos biens actifs et trouve automatiquement les acheteurs qui correspondent.</p>
+        <div id="match-list"><div class="empty"><div class="empty-icon">◎</div><p>Cliquez sur "Lancer l'analyse" pour démarrer</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── STATS ── -->
+    <div class="pane" id="pane-stats">
+      <div class="kpi-strip" style="margin-bottom:16px">
+        <div class="kpi"><div class="kpi-row1"><div class="kpi-dot" style="background:var(--amber)"></div></div><div class="kpi-num" id="s-ca">—</div><div class="kpi-label">Commissions totales</div></div>
+        <div class="kpi"><div class="kpi-row1"><div class="kpi-dot" style="background:var(--accent)"></div></div><div class="kpi-num" id="s-tx">—</div><div class="kpi-label">Dossiers actifs</div></div>
+        <div class="kpi"><div class="kpi-row1"><div class="kpi-dot" style="background:var(--sky)"></div></div><div class="kpi-num" id="s-m">—</div><div class="kpi-label">Total biens</div></div>
+        <div class="kpi"><div class="kpi-row1"><div class="kpi-dot" style="background:var(--violet)"></div></div><div class="kpi-num" id="s-c">—</div><div class="kpi-label">Total contacts</div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Tous mes biens</h2></div>
+        <div id="stats-list"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+
+<!-- ══ MODAL ══ -->
+<div class="overlay" id="ov" onclick="closeM(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h" id="m-title"></div>
+    <div id="m-body"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeM()">Annuler</button>
+      <button class="btn-save" id="m-save" onclick="saveM()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"><span id="toast-t"></span></div>
+
+<script>
+// ── AUTH ──
+(function(){
+  const t=localStorage.getItem('proplio_token')
+  if(!t){location.href='proplio-login.html';return}
+  fetch('https://nkpzcleluygjzqetwlju.supabase.co/auth/v1/user',{
+    headers:{'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4','Authorization':'Bearer '+t}
+  }).then(r=>{
+    if(!r.ok){localStorage.removeItem('proplio_token');location.href='proplio-login.html'}
+    else r.json().then(u=>{
+      const m=u.user_metadata||{}
+      const name=((m.prenom||'')+' '+(m.nom||'')).trim()||u.email||'Agent'
+      document.getElementById('u-name').textContent=name
+      const av=(m.prenom||'?')[0].toUpperCase()+(m.nom||'?')[0].toUpperCase()
+      document.getElementById('u-av').textContent=av
+    })
+  }).catch(()=>{})
+})()
+
+function doOut(){localStorage.removeItem('proplio_token');localStorage.removeItem('proplio_user');location.href='proplio-login.html'}
+
+// ── SUPABASE ──
+const DB='https://nkpzcleluygjzqetwlju.supabase.co'
+const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+const H={'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json','Prefer':'return=representation'}
+
+async function q(table,method='GET',body=null,qs=''){
+  const r=await fetch(`${DB}/rest/v1/${table}${qs}`,{method,headers:H,body:body?JSON.stringify(body):null})
+  if(!r.ok)throw new Error(await r.text())
+  return method==='DELETE'?null:r.json()
+}
+
+// ── STATE ──
+let S={mandats:[],contacts:[],transactions:[],visites:[]}
+let curM=null
+
+// ── NAV ──
+const TITLES={dash:'Tableau de bord',biens:'Mes biens',contacts:'Contacts',dossiers:'Suivi des dossiers',agenda:'Agenda',rapprochement:'Rapprochement automatique',stats:'Statistiques'}
+
+function go(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'))
+  document.getElementById('pane-'+id).classList.add('on')
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'))
+  if(el)el.classList.add('on')
+  document.getElementById('pg-h').textContent=TITLES[id]||id
+  const d=new Date()
+  const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']
+  const months=['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc']
+  document.getElementById('pg-sub').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} · Dakar 🇸🇳`
+}
+
+// ── LOAD ──
+async function loadAll(){
+  try{
+    const [m,c,t,v]=await Promise.all([
+      q('mandats','GET',null,'?order=created_at.desc'),
+      q('contacts','GET',null,'?order=created_at.desc'),
+      q('transactions','GET',null,'?order=created_at.desc'),
+      q('visites','GET',null,'?order=date_heure.asc'),
+    ])
+    S={mandats:m,contacts:c,transactions:t,visites:v}
+    renderAll()
+    toast('✓ Données actualisées')
+  }catch(e){toast('Erreur: '+e.message)}
+}
+
+function renderAll(){rKpis();rDash();rBiens();rContacts();rDossiers();rAgenda();rStats()}
+
+// ── KPIS ──
+function rKpis(){
+  const actifs=S.mandats.filter(m=>['ACTIF','EN_VISITE'].includes(m.status)).length
+  const ca=S.transactions.reduce((s,t)=>s+(Number(t.commission_fcfa)||0),0)
+  const offres=S.transactions.filter(t=>['OFFRE','COMPROMIS'].includes(t.etape)).length
+  const chauds=S.contacts.filter(c=>c.score==='CHAUD').length
+  set('kpi-biens',actifs)
+  set('kpi-ca',ca>0?(ca/1e6).toFixed(1)+'M':'0')
+  set('kpi-contacts',S.contacts.length)
+  set('kpi-offres',offres)
+  set('pill-biens',S.mandats.length)
+  set('kpi-b-chip',S.mandats.length+' total')
+  set('kpi-c-chip',chauds+' chauds')
+  set('kpi-o-chip',offres>0?offres+' urgent':'aucune')
+}
+
+// ── DASHBOARD ──
+function rDash(){
+  const db=document.getElementById('dash-biens')
+  db.innerHTML=!S.mandats.length
+    ?empty('◈','Aucun bien — ajoutez votre premier bien')
+    :S.mandats.slice(0,4).map(m=>`
+      <div class="row">
+        <div class="av" style="background:${typeColor(m.type_bien)}">${(m.type_bien||'??').substring(0,2)}</div>
+        <div style="flex:1"><div class="row-name">${m.titre}</div><div class="row-sub">${m.quartier}, ${m.ville} · ${fmt(m.prix_fcfa)}</div></div>
+        <span class="chip ${stCh(m.status)}">${m.status}</span>
+      </div>`).join('')
+
+  const dc=document.getElementById('dash-contacts')
+  dc.innerHTML=!S.contacts.length
+    ?empty('◉','Aucun contact')
+    :S.contacts.slice(0,4).map(c=>`
+      <div class="row">
+        <div class="av" style="background:${scColor(c.score)}">${c.prenom[0]}${c.nom[0]}</div>
+        <div style="flex:1"><div class="row-name">${c.prenom} ${c.nom}</div><div class="row-sub">${c.type}${c.budget_max_fcfa?' · '+fmt(c.budget_max_fcfa):''}</div></div>
+        <span class="chip ${scCh(c.score)}">${scLbl(c.score)}</span>
+      </div>`).join('')
+}
+
+// ── BIENS ──
+function rBiens(){
+  set('biens-count',`Mes biens (${S.mandats.length})`)
+  const el=document.getElementById('biens-list')
+  el.innerHTML=!S.mandats.length
+    ?`<div class="empty"><div class="empty-icon">◈</div><p>Aucun bien enregistré</p><span class="cta" onclick="openM('bien')">+ Ajouter mon premier bien</span></div>`
+    :`<table class="tbl">
+      <thead><tr><th>Bien</th><th>Quartier</th><th>Type</th><th>Prix</th><th>Statut</th><th></th></tr></thead>
+      <tbody>${S.mandats.map(m=>`
+        <tr>
+          <td>${m.titre}</td>
+          <td>${m.quartier}, ${m.ville}</td>
+          <td><span class="chip ${m.type==='EXCLUSIF'?'ch-a':'ch-b'}">${m.type}</span></td>
+          <td class="tbl-num">${fmt(m.prix_fcfa)}</td>
+          <td><span class="chip ${stCh(m.status)}">${m.status}</span></td>
+          <td><button class="row-del" onclick="del('mandats','${m.id}')">✕</button></td>
+        </tr>`).join('')}
+      </tbody></table>`
+}
+
+// ── CONTACTS ──
+function rContacts(){
+  set('contacts-count',`Contacts (${S.contacts.length})`)
+  const el=document.getElementById('contacts-list')
+  el.innerHTML=!S.contacts.length
+    ?`<div class="empty"><div class="empty-icon">◉</div><p>Aucun contact enregistré</p><span class="cta" onclick="openM('contact')">+ Ajouter mon premier contact</span></div>`
+    :S.contacts.map(c=>`
+      <div class="row">
+        <div class="av" style="background:${scColor(c.score)}">${c.prenom[0]}${c.nom[0]}</div>
+        <div style="flex:1">
+          <div class="row-name">${c.prenom} ${c.nom}</div>
+          <div class="row-sub">${c.phone} · ${c.type}${c.budget_max_fcfa?' · '+fmt(c.budget_max_fcfa):''}</div>
+        </div>
+        <span class="chip ${scCh(c.score)}">${scLbl(c.score)}</span>
+        <button class="row-del" onclick="del('contacts','${c.id}')">✕</button>
+      </div>`).join('')
+}
+
+// ── DOSSIERS ──
+function rDossiers(){
+  ['PROSPECTION','VISITE','OFFRE','ACTE_NOTARIE'].forEach(e=>{
+    const items=S.transactions.filter(t=>t.etape===e)
+    set('cnt-'+e,items.length)
+    const el=document.getElementById('pipe-'+e)
+    el.innerHTML=items.length
+      ?items.map(t=>{
+        const m=S.mandats.find(x=>x.id===t.mandat_id)
+        const c=S.contacts.find(x=>x.id===t.contact_id)
+        return`<div class="pipe-card">
+          <div class="pipe-card-name">${m?m.titre:'Bien'}</div>
+          <div class="pipe-card-sub">${c?c.prenom+' '+c.nom:'Contact'}</div>
+          <div class="pipe-card-price">${t.montant_fcfa?fmt(t.montant_fcfa):'—'}</div>
+        </div>`}).join('')
+      :`<div class="pipe-empty">Vide</div>`
+  })
+}
+
+// ── AGENDA ──
+function rAgenda(){
+  const el=document.getElementById('agenda-list')
+  el.innerHTML=!S.visites.length
+    ?`<div class="empty"><div class="empty-icon">◷</div><p>Aucune visite planifiée</p><span class="cta" onclick="openM('visite')">+ Planifier une visite</span></div>`
+    :S.visites.map(v=>{
+      const m=S.mandats.find(x=>x.id===v.mandat_id)
+      const c=S.contacts.find(x=>x.id===v.contact_id)
+      const d=new Date(v.date_heure)
+      const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']
+      return`<div class="agenda-row">
+        <div class="agenda-cal">
+          <div class="agenda-day">${days[d.getDay()]}</div>
+          <div class="agenda-num">${d.getDate()}</div>
+        </div>
+        <div class="agenda-info" style="flex:1">
+          <div class="agenda-title">${m?m.titre:'Bien'} — ${c?c.prenom+' '+c.nom:'Contact'}</div>
+          <div class="agenda-sub">${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})} · ${v.status}${v.notes?' · '+v.notes:''}</div>
+        </div>
+        <button class="row-del" onclick="del('visites','${v.id}')">✕</button>
+      </div>`}).join('')
+}
+
+// ── STATS ──
+function rStats(){
+  const ca=S.transactions.reduce((s,t)=>s+(Number(t.commission_fcfa)||0),0)
+  set('s-ca',ca>0?(ca/1e6).toFixed(1)+'M F':'0')
+  set('s-tx',S.transactions.length)
+  set('s-m',S.mandats.length)
+  set('s-c',S.contacts.length)
+  const el=document.getElementById('stats-list')
+  el.innerHTML=!S.mandats.length?`<div class="empty"><p>Aucun bien</p></div>`
+    :`<table class="tbl">
+      <thead><tr><th>Bien</th><th>Ville</th><th>Prix</th><th>Statut</th></tr></thead>
+      <tbody>${S.mandats.map(m=>`
+        <tr><td>${m.titre}</td><td>${m.ville}</td>
+        <td class="tbl-num">${fmt(m.prix_fcfa)}</td>
+        <td><span class="chip ${stCh(m.status)}">${m.status}</span></td></tr>`).join('')}
+      </tbody></table>`
+}
+
+// ── MATCHING ──
+function doMatch(){
+  if(!S.mandats.length||!S.contacts.length){toast('Ajoutez des biens et contacts d\'abord');return}
+  const results=[]
+  for(const m of S.mandats.filter(x=>x.status==='ACTIF')){
+    for(const c of S.contacts.filter(x=>['ACHETEUR','INVESTISSEUR'].includes(x.type))){
+      let score=0
+      if(c.budget_max_fcfa&&Number(m.prix_fcfa)<=Number(c.budget_max_fcfa))score+=40
+      else if(!c.budget_max_fcfa)score+=20
+      score+=50
+      if(score>=60)results.push({m,c,score:Math.min(score,99)})
+    }
+  }
+  results.sort((a,b)=>b.score-a.score)
+  const el=document.getElementById('match-list')
+  el.innerHTML=!results.length
+    ?`<div class="empty"><div class="empty-icon">◎</div><p>Aucun rapprochement trouvé<br/>Ajoutez des budgets sur vos contacts</p></div>`
+    :results.slice(0,10).map(r=>`
+      <div class="match-card">
+        <div class="match-score">${r.score}%</div>
+        <div class="match-info">
+          <div class="match-title">${r.m.titre} → ${r.c.prenom} ${r.c.nom}</div>
+          <div class="match-sub">${r.m.quartier}, ${r.m.ville} · ${fmt(r.m.prix_fcfa)} · ${r.c.phone}</div>
+        </div>
+        <button class="btn-notify" onclick="toast('Notifié ${r.c.prenom} ✓')">Notifier</button>
+      </div>`).join('')
+  toast(`◎ ${results.length} rapprochement(s) trouvé(s)`)
+}
+
+// ── SEARCH ──
+function doSearch(q){
+  if(!q||q.length<2)return
+  const ql=q.toLowerCase()
+  const m=S.mandats.filter(x=>x.titre.toLowerCase().includes(ql)||x.quartier.toLowerCase().includes(ql)).length
+  const c=S.contacts.filter(x=>(x.nom+' '+x.prenom).toLowerCase().includes(ql)||(x.phone||'').includes(ql)).length
+  if(m||c)toast(`${m} bien(s) · ${c} contact(s) trouvé(s)`)
+}
+
+// ── MODAL FORMS ──
+const FORMS={
+  bien:{
+    title:'Nouveau bien',
+    html:`
+      <div class="fld"><label>Titre</label><input id="f0" type="text" placeholder="Villa 4 chambres avec piscine"/></div>
+      <div class="fld"><label>Type mandat</label><select id="f1"><option value="EXCLUSIF">Exclusif</option><option value="SIMPLE">Simple</option></select></div>
+      <div class="fld"><label>Type de bien</label><select id="f2"><option value="VILLA">Villa</option><option value="APPARTEMENT">Appartement</option><option value="TERRAIN">Terrain</option><option value="STUDIO">Studio</option><option value="R_PLUS_1">R+1</option><option value="R_PLUS_2">R+2</option></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fld"><label>Prix (FCFA)</label><input id="f3" type="number" placeholder="78000000"/></div>
+        <div class="fld"><label>Surface (m²)</label><input id="f4" type="number" placeholder="200"/></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fld"><label>Quartier</label><input id="f5" type="text" placeholder="Almadies"/></div>
+        <div class="fld"><label>Ville</label><input id="f6" type="text" placeholder="Dakar" value="Dakar"/></div>
+      </div>`,
+    save:async()=>{
+      const d={titre:v('f0'),type:v('f1'),type_bien:v('f2'),prix_fcfa:v('f3'),surface:v('f4')||null,quartier:v('f5'),ville:v('f6')||'Dakar',status:'ACTIF'}
+      if(!d.titre||!d.prix_fcfa||!d.quartier){toast('Titre, Prix et Quartier sont obligatoires');return false}
+      const r=await q('mandats','POST',d)
+      S.mandats.unshift(Array.isArray(r)?r[0]:r)
+      return true
+    }
+  },
+  contact:{
+    title:'Nouveau contact',
+    html:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fld"><label>Prénom</label><input id="f0" type="text" placeholder="Aminata"/></div>
+        <div class="fld"><label>Nom</label><input id="f1" type="text" placeholder="Diallo"/></div>
+      </div>
+      <div class="fld"><label>Téléphone</label><input id="f2" type="tel" placeholder="+221 77 000 00 00"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fld"><label>Type</label><select id="f3"><option value="ACHETEUR">Acheteur</option><option value="VENDEUR">Vendeur</option><option value="INVESTISSEUR">Investisseur</option></select></div>
+        <div class="fld"><label>Score</label><select id="f4"><option value="CHAUD">🔥 Chaud</option><option value="TIEDE">Tiède</option><option value="FROID">Froid</option></select></div>
+      </div>
+      <div class="fld"><label>Budget max (FCFA)</label><input id="f5" type="number" placeholder="45000000"/></div>
+      <div class="fld"><label>Notes</label><input id="f6" type="text" placeholder="Cherche villa Almadies..."/></div>`,
+    save:async()=>{
+      const d={prenom:v('f0'),nom:v('f1'),phone:v('f2'),type:v('f3'),score:v('f4'),budget_max_fcfa:v('f5')||null,notes:v('f6')||null}
+      if(!d.prenom||!d.nom||!d.phone){toast('Prénom, Nom et Téléphone sont obligatoires');return false}
+      const r=await q('contacts','POST',d)
+      S.contacts.unshift(Array.isArray(r)?r[0]:r)
+      return true
+    }
+  },
+  dossier:{
+    title:'Nouveau dossier',
+    html:`
+      <div class="fld"><label>Bien</label><select id="f0">${S.mandats.map(m=>`<option value="${m.id}">${m.titre}</option>`).join('')}</select></div>
+      <div class="fld"><label>Contact</label><select id="f1">${S.contacts.map(c=>`<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('')}</select></div>
+      <div class="fld"><label>Étape</label><select id="f2"><option value="PROSPECTION">Prospection</option><option value="VISITE">Visite</option><option value="OFFRE">Offre</option><option value="COMPROMIS">Compromis</option><option value="ACTE_NOTARIE">Acte notarié</option></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fld"><label>Montant (FCFA)</label><input id="f3" type="number" placeholder="78000000"/></div>
+        <div class="fld"><label>Commission (FCFA)</label><input id="f4" type="number" placeholder="3900000"/></div>
+      </div>`,
+    save:async()=>{
+      const d={mandat_id:v('f0'),contact_id:v('f1'),etape:v('f2'),montant_fcfa:v('f3')||null,commission_fcfa:v('f4')||null}
+      const r=await q('transactions','POST',d)
+      S.transactions.unshift(Array.isArray(r)?r[0]:r)
+      return true
+    }
+  },
+  visite:{
+    title:'Planifier une visite',
+    html:`
+      <div class="fld"><label>Bien</label><select id="f0">${S.mandats.map(m=>`<option value="${m.id}">${m.titre}</option>`).join('')}</select></div>
+      <div class="fld"><label>Contact</label><select id="f1">${S.contacts.map(c=>`<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('')}</select></div>
+      <div class="fld"><label>Date et heure</label><input id="f2" type="datetime-local"/></div>
+      <div class="fld"><label>Notes</label><input id="f3" type="text" placeholder="Apporter les plans..."/></div>`,
+    save:async()=>{
+      const d={mandat_id:v('f0'),contact_id:v('f1'),agent_id:null,date_heure:v('f2'),notes:v('f3')||null,status:'PLANIFIEE'}
+      if(!d.date_heure){toast('La date est obligatoire');return false}
+      const r=await q('visites','POST',d)
+      S.visites.push(Array.isArray(r)?r[0]:r)
+      return true
+    }
+  }
+}
+
+function openM(type){
+  curM=type
+  const f=FORMS[type]
+  set('m-title',f.title)
+  document.getElementById('m-body').innerHTML=f.html
+  document.getElementById('ov').classList.add('on')
+}
+function closeM(e){if(!e||e.target===document.getElementById('ov'))document.getElementById('ov').classList.remove('on')}
+async function saveM(){
+  if(!curM)return
+  const btn=document.getElementById('m-save')
+  btn.disabled=true;btn.textContent='…'
+  try{
+    const ok=await FORMS[curM].save()
+    if(ok){closeM();renderAll();toast('✓ Enregistré')}
+  }catch(e){toast('Erreur: '+e.message)}
+  finally{btn.disabled=false;btn.textContent='Enregistrer'}
+}
+
+// ── DELETE ──
+async function del(table,id){
+  if(!confirm('Supprimer cet élément ?'))return
+  await q(table,'DELETE',null,`?id=eq.${id}`)
+  S[table]=S[table].filter(x=>x.id!==id)
+  renderAll();toast('✓ Supprimé')
+}
+
+// ── HELPERS ──
+const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val}
+const v=(id)=>{const e=document.getElementById(id);return e?e.value.trim():''}
+const empty=(icon,txt)=>`<div class="empty"><div class="empty-icon">${icon}</div><p>${txt}</p></div>`
+const fmt=(n)=>Number(n).toLocaleString('fr-FR')+' F'
+
+function stCh(s){
+  if(s==='ACTIF')return'ch-g'
+  if(s==='EN_VISITE')return'ch-b'
+  if(s==='OFFRE_RECUE'||s==='OFFRE')return'ch-a'
+  if(s==='COMPROMIS')return'ch-v'
+  if(s==='VENDU')return'ch-g'
+  return'ch-n'
+}
+function scCh(s){return s==='CHAUD'?'ch-r':s==='TIEDE'?'ch-a':'ch-n'}
+function scLbl(s){return s==='CHAUD'?'🔥 Chaud':s==='TIEDE'?'Tiède':'Froid'}
+function scColor(s){return s==='CHAUD'?'var(--rose)':s==='TIEDE'?'var(--amber)':'var(--accent)'}
+function typeColor(t){
+  const m={'VILLA':'#8B5CF6','APPARTEMENT':'var(--sky)','TERRAIN':'var(--accent)','STUDIO':'var(--amber)','R_PLUS_1':'var(--rose)','R_PLUS_2':'#EC4899'}
+  return m[t]||'var(--ink3)'
+}
+
+// ── TOAST ──
+function toast(msg){
+  const t=document.getElementById('toast')
+  document.getElementById('toast-t').textContent=msg
+  t.classList.add('on')
+  clearTimeout(t._t)
+  t._t=setTimeout(()=>t.classList.remove('on'),3000)
+}
+
+// ── INIT ──
+go('dash',document.querySelector('.nav-btn.on'))
+loadAll()
+</script>
+</body>
+</html>
