@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio — Créer un compte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080B10;--s1:#0E1219;--s2:#141820;--s3:#1C2230;
+      --rim:rgba(255,255,255,0.055);--rim2:rgba(255,255,255,0.09);
+      --ink:#E4EAF4;--ink2:#7A8BA8;--ink3:#3D4E68;
+      --accent:#00C875;--acc-dim:rgba(0,200,117,0.09);
+      --rose:#F0506E;--rose-dim:rgba(240,80,110,0.09);
+      --amber:#F5A623;
+    }
+    html,body{height:100%}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);display:grid;grid-template-columns:1fr 1fr;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+    /* GAUCHE */
+    .left{background:var(--s1);border-right:1px solid var(--rim);padding:40px 48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .left::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,200,117,0.05) 0%,transparent 70%);pointer-events:none}
+    .logo{display:flex;align-items:center;gap:9px;text-decoration:none;position:relative;z-index:1}
+    .logo-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#00805C);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:#000}
+    .logo-text{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink)}
+    .logo-text em{font-style:normal;color:var(--accent)}
+    .l-body{position:relative;z-index:1;margin-top:52px}
+    .l-body h2{font-family:'Syne',sans-serif;font-size:2rem;color:var(--ink);line-height:1.15;margin-bottom:.85rem;letter-spacing:-.02em}
+    .l-body h2 em{font-style:normal;color:var(--accent)}
+    .l-body p{font-size:.85rem;color:var(--ink2);line-height:1.7;max-width:300px}
+    .steps{margin-top:2.5rem;display:flex;flex-direction:column;gap:1.25rem}
+    .step{display:flex;align-items:flex-start;gap:.85rem}
+    .step-num{width:24px;height:24px;border-radius:6px;background:var(--acc-dim);border:1px solid rgba(0,200,117,.15);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--accent);flex-shrink:0;margin-top:2px}
+    .step-title{font-size:.8rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+    .step-sub{font-size:.72rem;color:var(--ink3)}
+    .l-foot{position:relative;z-index:1;border-top:1px solid var(--rim);padding-top:1.25rem}
+    .testi p{font-size:.78rem;color:var(--ink2);font-style:italic;line-height:1.6;margin-bottom:.75rem}
+    .testi-author{display:flex;align-items:center;gap:.6rem}
+    .testi-av{width:28px;height:28px;border-radius:7px;background:var(--acc-dim);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--accent)}
+    .testi-name{font-size:.75rem;font-weight:600;color:var(--ink)}
+    .testi-role{font-size:.65rem;color:var(--ink3)}
+
+    /* DROITE */
+    .right{display:flex;align-items:center;justify-content:center;padding:40px 5%;background:var(--bg)}
+    .box{width:100%;max-width:420px}
+    .box-head{margin-bottom:1.75rem}
+    .box-head h1{font-family:'Syne',sans-serif;font-size:1.7rem;color:var(--ink);margin-bottom:.35rem;letter-spacing:-.02em}
+    .box-head p{font-size:.8rem;color:var(--ink2)}
+    .box-head p a{color:var(--accent);text-decoration:none;font-weight:500}
+
+    /* PLAN SELECTOR */
+    .plan-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:1.5rem;background:var(--s1);border:1px solid var(--rim);border-radius:10px;padding:4px}
+    .plan-opt{padding:.55rem;border-radius:7px;text-align:center;cursor:pointer;transition:.12s;border:1px solid transparent}
+    .plan-opt:hover{background:var(--s2)}
+    .plan-opt.on{background:var(--s2);border-color:rgba(0,200,117,.15)}
+    .plan-opt-name{font-size:.7rem;font-weight:600;color:var(--ink);display:block}
+    .plan-opt.on .plan-opt-name{color:var(--accent)}
+    .plan-opt-price{font-size:.6rem;color:var(--ink3);margin-top:1px}
+
+    /* TRIAL */
+    .trial-badge{display:flex;align-items:center;gap:.6rem;background:var(--acc-dim);border:1px solid rgba(0,200,117,.12);border-radius:8px;padding:.6rem .9rem;margin-bottom:1.25rem;font-size:.72rem;color:var(--accent)}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+    .fld{margin-bottom:.8rem}
+    .fld label{display:block;font-size:.62rem;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+    .fld input,.fld select{width:100%;padding:.6rem .85rem;background:var(--s2);border:1px solid var(--rim2);border-radius:8px;font-size:.82rem;font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:.12s}
+    .fld input:focus,.fld select:focus{border-color:var(--accent);background:var(--s3)}
+    .fld input::placeholder{color:var(--ink3)}
+    .fld select option{background:var(--s2)}
+    .strength-bar{height:2px;background:var(--s3);border-radius:2px;margin-top:5px;overflow:hidden}
+    .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0%}
+
+    /* TERMS */
+    .terms{display:flex;align-items:flex-start;gap:.6rem;margin:.65rem 0 1.1rem;font-size:.72rem;color:var(--ink2)}
+    .terms input{margin-top:2px;accent-color:var(--accent)}
+    .terms a{color:var(--accent);text-decoration:none}
+
+    /* BTN */
+    .btn{width:100%;padding:.8rem;background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+    .btn:hover{background:#00E888}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+
+    /* DIVIDER */
+    .divider{display:flex;align-items:center;gap:.75rem;margin:.75rem 0}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--rim)}
+    .divider span{font-size:.68rem;color:var(--ink3)}
+
+    /* SOCIAL */
+    .soc-btns{display:grid;grid-template-columns:1fr 1fr;gap:.55rem}
+    .soc-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.58rem;border-radius:8px;border:1px solid var(--rim2);background:var(--s1);font-size:.78rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:.12s;font-family:'Inter',sans-serif}
+    .soc-btn:hover{background:var(--s2);color:var(--ink);border-color:var(--rim2)}
+
+    /* MSG */
+    .msg{padding:.65rem .9rem;border-radius:8px;font-size:.75rem;margin-bottom:.75rem;display:none;line-height:1.5}
+    .msg.on{display:block}
+    .msg.err{background:var(--rose-dim);border:1px solid rgba(240,80,110,.2);color:var(--rose)}
+    .msg.ok{background:var(--acc-dim);border:1px solid rgba(0,200,117,.2);color:var(--accent)}
+
+    @media(max-width:780px){body{grid-template-columns:1fr}.left{display:none}.right{padding:32px 20px}}
+  </style>
+</head>
+<body>
+
+<div class="left">
+  <a href="index.html" class="logo">
+    <div class="logo-mark">P</div>
+    <div class="logo-text">Prop<em>lio</em> 🇸🇳</div>
+  </a>
+  <div class="l-body">
+    <h2>Démarrez en<br/><em>15 minutes</em></h2>
+    <p>Pas de formation. Pas d'intégration complexe. Vous créez votre compte et vous partez.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div><div class="step-title">Créez votre compte</div><div class="step-sub">2 minutes, sans carte bancaire</div></div></div>
+      <div class="step"><div class="step-num">2</div><div><div class="step-title">Ajoutez vos biens</div><div class="step-sub">Importez vos biens et contacts existants</div></div></div>
+      <div class="step"><div class="step-num">3</div><div><div class="step-title">Vendez plus vite</div><div class="step-sub">Rapprochement auto, suivi, agenda — tout en un</div></div></div>
+    </div>
+  </div>
+  <div class="l-foot">
+    <div class="testi">
+      <p>«&nbsp;J'ai été opérationnel en moins de 10 minutes. Le rapprochement m'a permis de vendre un terrain à Thiès en 3 jours.&nbsp;»</p>
+      <div class="testi-author">
+        <div class="testi-av">AD</div>
+        <div><div class="testi-name">Amadou Diop</div><div class="testi-role">Agent · Dakar Plateau</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="right">
+  <div class="box">
+    <div class="box-head">
+      <h1>Créer un compte</h1>
+      <p>Déjà inscrit ? <a href="proplio-login.html">Se connecter</a></p>
+    </div>
+
+    <div class="trial-badge">🎁 <span><strong>14 jours gratuits</strong> — Sans carte bancaire requise</span></div>
+
+    <div class="plan-sel" id="plan-sel">
+      <div class="plan-opt on" onclick="selPlan('SOLO',this)"><span class="plan-opt-name">Solo</span><span class="plan-opt-price">15 000 F/mois</span></div>
+      <div class="plan-opt" onclick="selPlan('PRO',this)"><span class="plan-opt-name">Pro ⭐</span><span class="plan-opt-price">20 000 F/mois</span></div>
+      <div class="plan-opt" onclick="selPlan('AGENCE',this)"><span class="plan-opt-name">Agence</span><span class="plan-opt-price">30 000 F/mois</span></div>
+    </div>
+
+    <div class="msg err" id="msg-err"></div>
+    <div class="msg ok" id="msg-ok"></div>
+
+    <div class="form-grid">
+      <div class="fld"><label>Prénom</label><input type="text" id="r-prenom" placeholder="Moussa" autocomplete="given-name"/></div>
+      <div class="fld"><label>Nom</label><input type="text" id="r-nom" placeholder="Diallo" autocomplete="family-name"/></div>
+    </div>
+    <div class="fld"><label>Nom de votre agence</label><input type="text" id="r-agence" placeholder="Teranga Immo"/></div>
+    <div class="fld"><label>Email</label><input type="email" id="r-email" placeholder="moussa@teranga-immo.sn" autocomplete="email"/></div>
+    <div class="fld"><label>Téléphone / WhatsApp</label><input type="tel" id="r-phone" placeholder="+221 77 000 00 00"/></div>
+    <div class="fld">
+      <label>Mot de passe</label>
+      <input type="password" id="r-pwd" placeholder="Min. 8 car., 1 majuscule, 1 chiffre" oninput="checkStr(this.value)"/>
+      <div class="strength-bar"><div class="strength-fill" id="str-fill"></div></div>
+    </div>
+    <div class="fld"><label>Ville principale</label>
+      <select id="r-ville">
+        <option value="Dakar">Dakar</option>
+        <option value="Thiès">Thiès</option>
+        <option value="Saint-Louis">Saint-Louis</option>
+        <option value="Mbour">Mbour</option>
+        <option value="Ziguinchor">Ziguinchor</option>
+        <option value="Autre">Autre</option>
+      </select>
+    </div>
+
+    <label class="terms"><input type="checkbox" id="r-terms"/> J'accepte les <a href="#">CGU</a> et la <a href="#">Politique de confidentialité</a></label>
+
+    <button class="btn" id="btn-sub" onclick="doReg()">Créer mon compte gratuit →</button>
+
+    <div class="divider"><span>ou continuer avec</span></div>
+    <div class="soc-btns">
+      <button class="soc-btn" onclick="showMsg('err','Google OAuth bientôt disponible')">🔵 Google</button>
+      <button class="soc-btn" onclick="showMsg('err','Facebook bientôt disponible')">📘 Facebook</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://nkpzcleluygjzqetwlju.supabase.co'
+const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+let plan='SOLO'
+
+function selPlan(p,el){
+  plan=p
+  document.querySelectorAll('.plan-opt').forEach(o=>o.classList.remove('on'))
+  el.classList.add('on')
+}
+
+function checkStr(pwd){
+  let s=0
+  if(pwd.length>=8)s++
+  if(/[A-Z]/.test(pwd))s++
+  if(/[0-9]/.test(pwd))s++
+  if(/[^A-Za-z0-9]/.test(pwd))s++
+  const f=document.getElementById('str-fill')
+  f.style.width=(s*25)+'%'
+  f.style.background=['var(--rose)','var(--rose)','var(--amber)','var(--accent)','var(--accent)'][s]
+}
+
+function showMsg(type,msg){
+  document.getElementById('msg-err').classList.remove('on')
+  document.getElementById('msg-ok').classList.remove('on')
+  const el=document.getElementById('msg-'+type)
+  el.textContent=msg;el.classList.add('on')
+}
+
+async function doReg(){
+  const prenom=document.getElementById('r-prenom').value.trim()
+  const nom=document.getElementById('r-nom').value.trim()
+  const agence=document.getElementById('r-agence').value.trim()
+  const email=document.getElementById('r-email').value.trim()
+  const phone=document.getElementById('r-phone').value.trim()
+  const pwd=document.getElementById('r-pwd').value
+  const ville=document.getElementById('r-ville').value
+  const terms=document.getElementById('r-terms').checked
+
+  if(!prenom||!nom||!email||!pwd){showMsg('err','Tous les champs obligatoires doivent être remplis.');return}
+  if(pwd.length<8){showMsg('err','Mot de passe trop court (minimum 8 caractères).');return}
+  if(!/[A-Z]/.test(pwd)||!/[0-9]/.test(pwd)){showMsg('err','Le mot de passe doit contenir au moins 1 majuscule et 1 chiffre.');return}
+  if(!terms){showMsg('err','Veuillez accepter les conditions d\'utilisation.');return}
+
+  const btn=document.getElementById('btn-sub')
+  btn.disabled=true;btn.textContent='Création du compte…'
+
+  try{
+    const res=await fetch(`${SB}/auth/v1/signup`,{
+      method:'POST',
+      headers:{'apikey':K,'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email,password:pwd,
+        data:{prenom,nom,agence,phone,ville,plan},
+        email_redirect_to:'https://hamidousidibe517-hue.github.io/proplio/confirmation.html'
+      })
+    })
+    const data=await res.json()
+    if(!res.ok){showMsg('err',data.error_description||data.msg||'Erreur lors de la création.');return}
+
+    if(data.access_token){
+      localStorage.setItem('proplio_token',data.access_token)
+      localStorage.setItem('proplio_user',JSON.stringify(data.user))
+      localStorage.setItem('proplio_plan',plan)
+      showMsg('ok','✓ Compte créé ! Redirection…')
+      setTimeout(()=>location.href='paiement.html?plan='+plan,1200)
+    } else {
+      localStorage.setItem('proplio_pending_email',email)
+      showMsg('ok','✉️ Vérifiez votre email pour confirmer votre compte.')
+      setTimeout(()=>location.href='confirmation.html',1500)
+    }
+  }catch(e){showMsg('err','Erreur réseau: '+e.message)}
+  finally{btn.disabled=false;btn.textContent='Créer mon compte gratuit →'}
+}
+
+if(localStorage.getItem('proplio_token'))location.href='proplio-dashboard.html'
+</script>
+</body>
+</html>
