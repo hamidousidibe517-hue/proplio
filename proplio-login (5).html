@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080B10;--s1:#0E1219;--s2:#141820;--s3:#1C2230;
+      --rim:rgba(255,255,255,0.055);--rim2:rgba(255,255,255,0.09);
+      --ink:#E4EAF4;--ink2:#7A8BA8;--ink3:#3D4E68;
+      --accent:#00C875;--acc-dim:rgba(0,200,117,0.09);
+      --rose:#F0506E;--rose-dim:rgba(240,80,110,0.09);
+      --amber:#F5A623;
+    }
+    html,body{height:100%}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);display:grid;grid-template-columns:1fr 1fr;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+    /* GAUCHE */
+    .left{background:var(--s1);border-right:1px solid var(--rim);padding:40px 48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .left::before{content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,200,117,0.05) 0%,transparent 70%);pointer-events:none}
+    .logo{display:flex;align-items:center;gap:9px;text-decoration:none;position:relative;z-index:1}
+    .logo-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#00805C);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:#000}
+    .logo-text{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--ink)}
+    .logo-text em{font-style:normal;color:var(--accent)}
+    .l-body{position:relative;z-index:1;margin-top:52px}
+    .l-body h2{font-family:'Syne',sans-serif;font-size:2rem;color:var(--ink);line-height:1.15;margin-bottom:.85rem;letter-spacing:-.02em}
+    .l-body h2 em{font-style:normal;color:var(--accent)}
+    .l-body p{font-size:.85rem;color:var(--ink2);line-height:1.7;max-width:300px}
+    .stats{display:flex;gap:.75rem;margin-top:2rem}
+    .stat{background:var(--s2);border:1px solid var(--rim);border-radius:10px;padding:.9rem 1.1rem;flex:1}
+    .stat strong{display:block;font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--ink);line-height:1}
+    .stat strong em{font-style:normal;color:var(--accent)}
+    .stat p{font-size:.65rem;color:var(--ink3);margin-top:3px}
+    .l-foot{position:relative;z-index:1;border-top:1px solid var(--rim);padding-top:1.25rem}
+    .testi p{font-size:.78rem;color:var(--ink2);font-style:italic;line-height:1.6;margin-bottom:.75rem}
+    .testi-author{display:flex;align-items:center;gap:.6rem}
+    .testi-av{width:28px;height:28px;border-radius:7px;background:var(--acc-dim);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--accent)}
+    .testi-name{font-size:.75rem;font-weight:600;color:var(--ink)}
+    .testi-role{font-size:.65rem;color:var(--ink3)}
+
+    /* DROITE */
+    .right{display:flex;align-items:center;justify-content:center;padding:40px 5%;background:var(--bg)}
+    .box{width:100%;max-width:380px}
+    .box-head{margin-bottom:1.75rem}
+    .box-head h1{font-family:'Syne',sans-serif;font-size:1.7rem;color:var(--ink);margin-bottom:.35rem;letter-spacing:-.02em}
+    .box-head p{font-size:.8rem;color:var(--ink2)}
+    .box-head p a{color:var(--accent);text-decoration:none;font-weight:500}
+
+    /* TABS */
+    .tabs{display:flex;background:var(--s1);border:1px solid var(--rim);border-radius:9px;padding:3px;margin-bottom:1.5rem;gap:3px}
+    .tab{flex:1;padding:.52rem;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--ink2);text-align:center;transition:.12s;border:none;background:none;font-family:'Inter',sans-serif}
+    .tab.on{background:var(--s2);color:var(--accent);border:1px solid rgba(0,200,117,.12)}
+
+    /* SOCIAL */
+    .soc-btns{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:1.1rem}
+    .soc-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.58rem;border-radius:8px;border:1px solid var(--rim2);background:var(--s1);font-size:.78rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:.12s;font-family:'Inter',sans-serif}
+    .soc-btn:hover{background:var(--s2);color:var(--ink)}
+    .divider{display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--rim)}
+    .divider span{font-size:.65rem;color:var(--ink3)}
+
+    /* FORM */
+    .fld{margin-bottom:.8rem}
+    .fld label{display:block;font-size:.62rem;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+    .fld input{width:100%;padding:.62rem .85rem;background:var(--s2);border:1px solid var(--rim2);border-radius:8px;font-size:.82rem;font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:.12s}
+    .fld input:focus{border-color:var(--accent);background:var(--s3)}
+    .fld input::placeholder{color:var(--ink3)}
+    .frow{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;font-size:.75rem}
+    .frow label{display:flex;align-items:center;gap:.4rem;color:var(--ink2);cursor:pointer}
+    .frow input[type=checkbox]{accent-color:var(--accent)}
+    .frow a{color:var(--accent);cursor:pointer;text-decoration:none}
+    .frow a:hover{opacity:.7}
+
+    /* BTN */
+    .btn{width:100%;padding:.78rem;background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+    .btn:hover{background:#00E888}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+
+    /* MSG */
+    .msg{padding:.65rem .9rem;border-radius:8px;font-size:.75rem;margin-bottom:.75rem;display:none;line-height:1.5}
+    .msg.on{display:block}
+    .msg.err{background:var(--rose-dim);border:1px solid rgba(240,80,110,.2);color:var(--rose)}
+    .msg.ok{background:var(--acc-dim);border:1px solid rgba(0,200,117,.2);color:var(--accent)}
+
+    /* MOBILE MONEY */
+    .mm{margin-top:1.25rem;text-align:center}
+    .mm p{font-size:.68rem;color:var(--ink3);margin-bottom:.5rem}
+    .mm-btns{display:flex;gap:.5rem;justify-content:center}
+    .mm-btn{font-size:.7rem;font-weight:600;padding:.35rem .85rem;border-radius:20px;border:1px solid var(--rim2);background:none;cursor:pointer;color:var(--ink2);transition:.12s;font-family:'Inter',sans-serif}
+    .mm-btn:hover{border-color:var(--rim2);color:var(--ink)}
+
+    /* FOOTER */
+    .foot{margin-top:1.5rem;text-align:center;font-size:.68rem;color:var(--ink3);line-height:1.6}
+    .foot a{color:var(--accent);text-decoration:none}
+
+    @media(max-width:780px){body{grid-template-columns:1fr}.left{display:none}.right{padding:32px 20px}}
+  </style>
+</head>
+<body>
+
+<!-- GAUCHE -->
+<div class="left">
+  <a href="index.html" class="logo">
+    <div class="logo-mark">P</div>
+    <div class="logo-text">Prop<em>lio</em> 🇸🇳</div>
+  </a>
+  <div class="l-body">
+    <h2>Chaque contact<br/>est une<br/><em>transaction</em></h2>
+    <p>Le carnet de contacts immobilier conçu pour les agents sénégalais.</p>
+    <div class="stats">
+      <div class="stat"><strong>300<em>+</em></strong><p>Agents actifs</p></div>
+      <div class="stat"><strong>41<em>%</em></strong><p>Biens vendus en plus</p></div>
+    </div>
+  </div>
+  <div class="l-foot">
+    <div class="testi">
+      <p>«&nbsp;Proplio m'a permis de vendre un terrain à Thiès en 3 jours grâce au rapprochement automatique.&nbsp;»</p>
+      <div class="testi-author">
+        <div class="testi-av">AD</div>
+        <div><div class="testi-name">Amadou Diop</div><div class="testi-role">Agent indépendant · Dakar Plateau</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DROITE -->
+<div class="right">
+  <div class="box">
+    <div class="box-head">
+      <h1 id="box-h">Bon retour 👋</h1>
+      <p id="box-sub">Pas encore de compte ? <a onclick="switchTab('register')">Créer un compte gratuit</a></p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" id="tab-login" onclick="switchTab('login')">Se connecter</button>
+      <button class="tab" id="tab-register" onclick="switchTab('register')">S'inscrire</button>
+    </div>
+
+    <div class="msg err" id="msg-err"></div>
+    <div class="msg ok" id="msg-ok"></div>
+
+    <div class="soc-btns">
+      <button class="soc-btn" onclick="showMsg('err','Google OAuth bientôt disponible')">🔵 Google</button>
+      <button class="soc-btn" onclick="showMsg('err','Facebook bientôt disponible')">📘 Facebook</button>
+    </div>
+    <div class="divider"><span>ou avec votre email</span></div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+      <div class="fld"><label>Adresse email</label><input type="email" id="l-email" placeholder="moussa@teranga-immo.sn" autocomplete="email"/></div>
+      <div class="fld"><label>Mot de passe</label><input type="password" id="l-pwd" placeholder="••••••••" autocomplete="current-password"/></div>
+      <div class="frow">
+        <label><input type="checkbox" id="l-rem"/> Se souvenir de moi</label>
+        <a onclick="showForgot()">Mot de passe oublié ?</a>
+      </div>
+      <button class="btn" id="btn-login" onclick="doLogin()">Se connecter →</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="form-register" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem">
+        <div class="fld"><label>Prénom</label><input type="text" id="r-prenom" placeholder="Moussa"/></div>
+        <div class="fld"><label>Nom</label><input type="text" id="r-nom" placeholder="Diallo"/></div>
+      </div>
+      <div class="fld"><label>Email</label><input type="email" id="r-email" placeholder="moussa@teranga-immo.sn"/></div>
+      <div class="fld"><label>Téléphone</label><input type="tel" id="r-phone" placeholder="+221 77 000 00 00"/></div>
+      <div class="fld"><label>Mot de passe</label><input type="password" id="r-pwd" placeholder="Min. 8 car., 1 majuscule, 1 chiffre"/></div>
+      <button class="btn" id="btn-register" onclick="doRegister()" style="margin-top:.25rem">Créer mon compte →</button>
+      <p style="font-size:.68rem;color:var(--ink3);text-align:center;margin-top:.65rem">14 jours gratuits · Sans carte bancaire</p>
+    </div>
+
+    <div class="mm">
+      <p>Paiement abonnement par mobile money</p>
+      <div class="mm-btns">
+        <button class="mm-btn">🟠 Orange Money</button>
+        <button class="mm-btn">🔵 Wave</button>
+      </div>
+    </div>
+
+    <div class="foot">
+      En continuant, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">Politique de confidentialité</a><br/>
+      Support : <a href="https://wa.me/22177027629">WhatsApp +221 77 027 76 29</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://nkpzcleluygjzqetwlju.supabase.co'
+const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+
+function switchTab(tab){
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none'
+  document.getElementById('form-register').style.display=tab==='register'?'block':'none'
+  document.getElementById('tab-login').classList.toggle('on',tab==='login')
+  document.getElementById('tab-register').classList.toggle('on',tab==='register')
+  document.getElementById('box-h').textContent=tab==='login'?'Bon retour 👋':'Créer un compte 🚀'
+  document.getElementById('box-sub').innerHTML=tab==='login'
+    ?'Pas encore de compte ? <a onclick="switchTab(\'register\')">Créer un compte gratuit</a>'
+    :'Déjà un compte ? <a onclick="switchTab(\'login\')">Se connecter</a>'
+  document.getElementById('msg-err').classList.remove('on')
+  document.getElementById('msg-ok').classList.remove('on')
+}
+
+function showMsg(type,msg){
+  document.getElementById('msg-err').classList.remove('on')
+  document.getElementById('msg-ok').classList.remove('on')
+  const el=document.getElementById('msg-'+type)
+  el.textContent=msg;el.classList.add('on')
+}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim()
+  const pwd=document.getElementById('l-pwd').value
+  if(!email||!pwd){showMsg('err','Veuillez renseigner votre email et mot de passe.');return}
+  const btn=document.getElementById('btn-login')
+  btn.disabled=true;btn.textContent='Connexion…'
+  try{
+    const res=await fetch(`${SB}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{'apikey':K,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pwd})
+    })
+    const data=await res.json()
+    if(!res.ok){showMsg('err',data.error_description||'Email ou mot de passe incorrect.');return}
+    localStorage.setItem('proplio_token',data.access_token)
+    localStorage.setItem('proplio_user',JSON.stringify(data.user))
+    showMsg('ok','✓ Connexion réussie ! Redirection…')
+    setTimeout(()=>location.href='proplio-dashboard.html',800)
+  }catch(e){showMsg('err','Erreur réseau.')}
+  finally{btn.disabled=false;btn.textContent='Se connecter →'}
+}
+
+async function doRegister(){
+  const prenom=document.getElementById('r-prenom').value.trim()
+  const nom=document.getElementById('r-nom').value.trim()
+  const email=document.getElementById('r-email').value.trim()
+  const phone=document.getElementById('r-phone').value.trim()
+  const pwd=document.getElementById('r-pwd').value
+  if(!prenom||!nom||!email||!pwd){showMsg('err','Tous les champs sont obligatoires.');return}
+  if(pwd.length<8||!/[A-Z]/.test(pwd)||!/[0-9]/.test(pwd)){showMsg('err','Mot de passe invalide (8 car. min, 1 majuscule, 1 chiffre).');return}
+  const btn=document.getElementById('btn-register')
+  btn.disabled=true;btn.textContent='Création…'
+  try{
+    const res=await fetch(`${SB}/auth/v1/signup`,{
+      method:'POST',
+      headers:{'apikey':K,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pwd,data:{prenom,nom,phone}})
+    })
+    const data=await res.json()
+    if(!res.ok){showMsg('err',data.error_description||'Erreur lors de la création.');return}
+    if(data.access_token){
+      localStorage.setItem('proplio_token',data.access_token)
+      localStorage.setItem('proplio_user',JSON.stringify(data.user))
+      showMsg('ok','✓ Compte créé ! Redirection…')
+      setTimeout(()=>location.href='proplio-dashboard.html',1000)
+    } else {
+      showMsg('ok','✉️ Vérifiez votre email pour confirmer votre compte.')
+    }
+  }catch(e){showMsg('err','Erreur réseau.')}
+  finally{btn.disabled=false;btn.textContent='Créer mon compte →'}
+}
+
+async function showForgot(){
+  const email=document.getElementById('l-email').value.trim()
+  if(!email){showMsg('err','Entrez votre email ci-dessus d\'abord.');return}
+  await fetch(`${SB}/auth/v1/recover`,{
+    method:'POST',
+    headers:{'apikey':K,'Content-Type':'application/json'},
+    body:JSON.stringify({email,redirect_to:'https://hamidousidibe517-hue.github.io/proplio/confirmation.html'})
+  })
+  showMsg('ok','✉️ Lien de réinitialisation envoyé à '+email)
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const tab=document.getElementById('tab-login').classList.contains('on')
+    if(tab)doLogin();else doRegister()
+  }
+})
+
+const t=localStorage.getItem('proplio_token')
+if(t){
+  fetch(`${SB}/auth/v1/user`,{headers:{'apikey':K,'Authorization':'Bearer '+t}})
+    .then(r=>{if(r.ok)location.href='proplio-dashboard.html'})
+    .catch(()=>{})
+}
+</script>
+</body>
+</html>
