@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proplio Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080B10;--s1:#0E1219;--s2:#141820;--s3:#1C2230;
+      --rim:rgba(255,255,255,0.055);--rim2:rgba(255,255,255,0.09);
+      --ink:#E4EAF4;--ink2:#7A8BA8;--ink3:#3D4E68;
+      --accent:#00C875;--acc-dim:rgba(0,200,117,0.09);
+      --amber:#F5A623;--amb-dim:rgba(245,166,35,0.09);
+      --rose:#F0506E;--rose-dim:rgba(240,80,110,0.09);
+      --sky:#3B9EFF;--sky-dim:rgba(59,158,255,0.09);
+      --sw:220px;--r:10px;
+    }
+    html,body{height:100%;background:var(--bg)}
+    body{font-family:'Inter',sans-serif;color:var(--ink);display:flex;-webkit-font-smoothing:antialiased}
+
+    /* SIDEBAR */
+    .sb{width:var(--sw);flex-shrink:0;background:var(--s1);border-right:1px solid var(--rim);display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:60}
+    .sb-top{padding:20px 16px 16px;border-bottom:1px solid var(--rim)}
+    .sb-logo{display:flex;align-items:center;gap:9px}
+    .sb-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--rose),#C0392B);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:800;color:#fff;flex-shrink:0}
+    .sb-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--ink)}
+    .sb-name em{font-style:normal;color:var(--rose)}
+    .sb-role{font-size:.58rem;font-weight:600;color:var(--rose);background:var(--rose-dim);border:1px solid rgba(240,80,110,.15);padding:.18rem .55rem;border-radius:5px;margin-top:.3rem;display:inline-block;letter-spacing:.06em;text-transform:uppercase}
+    .sb-nav{padding:12px 10px;flex:1;display:flex;flex-direction:column;gap:1px}
+    .sb-sep{height:1px;background:var(--rim);margin:6px 4px}
+    .sb-lbl{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);padding:5px 8px 3px}
+    .nav-btn{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;color:var(--ink2);font-size:.78rem;font-weight:500;cursor:pointer;transition:.12s;border:1px solid transparent}
+    .nav-btn:hover{background:var(--s2);color:var(--ink)}
+    .nav-btn.on{background:var(--rose-dim);color:var(--rose);border-color:rgba(240,80,110,.12)}
+    .nav-icon{width:14px;text-align:center;flex-shrink:0;font-style:normal;opacity:.7}
+    .nav-btn.on .nav-icon{opacity:1}
+    .nav-pill{margin-left:auto;min-width:17px;height:17px;background:var(--rose);color:#fff;font-size:.57rem;font-weight:700;padding:0 4px;border-radius:20px;display:flex;align-items:center;justify-content:center}
+    .sb-bot{padding:12px 10px;border-top:1px solid var(--rim)}
+    .user-row{display:flex;align-items:center;gap:8px}
+    .user-av{width:28px;height:28px;border-radius:7px;background:var(--rose-dim);border:1px solid rgba(240,80,110,.15);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--rose);flex-shrink:0}
+    .user-name{font-size:.72rem;font-weight:600;color:var(--ink)}
+    .user-role{font-size:.6rem;color:var(--rose)}
+    .out-btn{margin-left:auto;width:24px;height:24px;background:none;border:1px solid var(--rim);border-radius:6px;color:var(--ink3);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:.12s}
+    .out-btn:hover{color:var(--rose);border-color:var(--rose-dim);background:var(--rose-dim)}
+
+    /* MAIN */
+    .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--s1);border-bottom:1px solid var(--rim);padding:0 22px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .topbar-l h1{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--ink)}
+    .topbar-l p{font-size:.66rem;color:var(--ink3)}
+    .topbar-r{display:flex;align-items:center;gap:6px}
+    .top-btn{width:28px;height:28px;border-radius:7px;background:var(--s2);border:1px solid var(--rim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.78rem;transition:.12s}
+    .top-btn:hover{background:var(--s3)}
+    .pg{padding:20px 22px;flex:1}
+    .pane{display:none}
+    .pane.on{display:block}
+
+    /* KPIs */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+    .kpi{background:var(--s1);border-radius:var(--r);border:1px solid var(--rim);padding:14px 16px;transition:.12s}
+    .kpi:hover{border-color:var(--rim2)}
+    .kpi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .kpi-dot{width:7px;height:7px;border-radius:50%}
+    .kpi-chip{font-size:.58rem;font-weight:600;padding:2px 6px;border-radius:5px}
+    .ch-g{background:var(--acc-dim);color:var(--accent)}
+    .ch-r{background:var(--rose-dim);color:var(--rose)}
+    .ch-a{background:var(--amb-dim);color:var(--amber)}
+    .ch-b{background:var(--sky-dim);color:var(--sky)}
+    .kpi-val{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:700;color:var(--ink);letter-spacing:-.03em;line-height:1}
+    .kpi-lbl{font-size:.66rem;color:var(--ink3);margin-top:4px}
+
+    /* CARD */
+    .card{background:var(--s1);border-radius:var(--r);border:1px solid var(--rim);padding:16px;margin-bottom:12px}
+    .card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .card-h h2{font-size:.78rem;font-weight:600;color:var(--ink)}
+
+    /* ALERT */
+    .alert{display:flex;gap:.75rem;padding:11px 13px;border-radius:8px;margin-bottom:8px}
+    .alert-icon{font-size:.9rem;flex-shrink:0;margin-top:1px}
+    .alert-text{font-size:.74rem;line-height:1.55}
+    .alert-text strong{font-weight:600;display:block;margin-bottom:1px}
+    .alert.red{background:var(--rose-dim);border:1px solid rgba(240,80,110,.15)}
+    .alert.red .alert-text{color:var(--rose)}
+    .alert.amber{background:var(--amb-dim);border:1px solid rgba(245,166,35,.15)}
+    .alert.amber .alert-text{color:var(--amber)}
+    .alert.green{background:var(--acc-dim);border:1px solid rgba(0,200,117,.15)}
+    .alert.green .alert-text{color:var(--accent)}
+
+    /* TABLE */
+    .tbl{width:100%;border-collapse:collapse}
+    .tbl th{text-align:left;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);padding:0 10px 10px;border-bottom:1px solid var(--rim)}
+    .tbl td{padding:10px;border-bottom:1px solid var(--rim);font-size:.74rem;color:var(--ink2)}
+    .tbl td:first-child{color:var(--ink);font-weight:500}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl tr:hover td{background:var(--s2)}
+    .badge{font-size:.58rem;font-weight:600;padding:2px 7px;border-radius:5px}
+    .b-g{background:var(--acc-dim);color:var(--accent)}
+    .b-a{background:var(--amb-dim);color:var(--amber)}
+    .b-r{background:var(--rose-dim);color:var(--rose)}
+    .b-n{background:var(--s3);color:var(--ink3)}
+
+    /* GRID */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+
+    /* BAR */
+    .bar-r{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+    .bar-m{font-size:.6rem;color:var(--ink3);width:22px;flex-shrink:0}
+    .bar-t{flex:1;height:4px;background:var(--s3);border-radius:10px;overflow:hidden}
+    .bar-f{height:100%;border-radius:10px;background:var(--rose);transition:width .6s}
+    .bar-f.g{background:var(--accent)}
+    .bar-v{font-size:.6rem;color:var(--ink3);width:44px;text-align:right}
+
+    /* STAT MINI */
+    .stat-mini{background:var(--s2);border-radius:8px;border:1px solid var(--rim);padding:12px;text-align:center}
+    .stat-mini-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+    .stat-mini-lbl{font-size:.62rem;color:var(--ink3);margin-top:2px}
+
+    /* SETTINGS */
+    .setting-row{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0;border-bottom:1px solid var(--rim)}
+    .setting-row:last-child{border-bottom:none}
+    .setting-name{font-size:.78rem;font-weight:500;color:var(--ink)}
+    .setting-sub{font-size:.66rem;color:var(--ink3);margin-top:1px}
+    .toggle{width:34px;height:18px;border-radius:20px;border:1px solid var(--rim2);background:var(--s3);position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
+    .toggle.on{background:var(--accent);border-color:var(--accent)}
+    .toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s}
+    .toggle.on::after{left:18px}
+
+    /* LOG */
+    .log-row{display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--rim);font-size:.72rem}
+    .log-row:last-child{border-bottom:none}
+    .log-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .log-msg{color:var(--ink2);flex:1}
+    .log-time{color:var(--ink3);flex-shrink:0;font-size:.65rem}
+
+    /* SEARCH */
+    .search-box{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:5px 10px}
+    .search-box input{border:none;background:none;outline:none;font-size:.74rem;color:var(--ink);width:140px;font-family:'Inter',sans-serif}
+    .search-box input::placeholder{color:var(--ink3)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:16px;right:16px;z-index:300;background:var(--s2);color:var(--ink);border:1px solid var(--rim2);padding:8px 14px;border-radius:8px;font-size:.73rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(50px);opacity:0;transition:.22s}
+    .toast.on{transform:none;opacity:1}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:2.5rem;color:var(--ink3);font-size:.74rem}
+
+    /* LOADING */
+    .ld{text-align:center;padding:2rem;color:var(--ink3);font-size:.74rem}
+    .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--rim2);border-top-color:var(--rose);border-radius:50%;animation:spin .55s linear infinite;margin-right:6px;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    ::-webkit-scrollbar{width:3px}
+    ::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:3px}
+
+    @media(max-width:900px){
+      .sb{width:48px}.sb-name,.sb-role,.sb-lbl,.nav-btn span:not(.nav-icon),.user-name,.user-role{display:none}
+      .nav-btn{justify-content:center}.main{margin-left:48px}
+      .kpis,.g2,.g3{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sb-top">
+    <div class="sb-logo">
+      <div class="sb-mark">A</div>
+      <div>
+        <div class="sb-name">Prop<em>lio</em> Admin</div>
+        <div class="sb-role">Super Admin</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Vue globale</div>
+    <div class="nav-btn on" onclick="go('overview',this)"><em class="nav-icon">⬡</em><span>Vue d'ensemble</span></div>
+    <div class="nav-btn" onclick="go('users',this)"><em class="nav-icon">◉</em><span>Utilisateurs</span><span class="nav-pill" id="pill-users">0</span></div>
+    <div class="nav-btn" onclick="go('orgs',this)"><em class="nav-icon">◈</em><span>Organisations</span></div>
+    <div class="nav-btn" onclick="go('revenue',this)"><em class="nav-icon">▲</em><span>Revenus</span></div>
+    <div class="sb-sep"></div>
+    <div class="sb-lbl">Système</div>
+    <div class="nav-btn" onclick="go('alerts',this)"><em class="nav-icon">⚠</em><span>Alertes</span><span class="nav-pill">2</span></div>
+    <div class="nav-btn" onclick="go('logs',this)"><em class="nav-icon">≡</em><span>Logs</span></div>
+    <div class="nav-btn" onclick="go('settings',this)"><em class="nav-icon">⚙</em><span>Paramètres</span></div>
+  </nav>
+  <div class="sb-bot">
+    <div class="user-row">
+      <div class="user-av">SA</div>
+      <div><div class="user-name">Super Admin</div><div class="user-role">proplio.sn</div></div>
+      <button class="out-btn" onclick="doOut()" title="Déconnexion">↪</button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-l"><h1 id="pg-h">Vue d'ensemble</h1><p id="pg-sub"></p></div>
+    <div class="topbar-r">
+      <div class="top-btn" onclick="loadData()" title="Actualiser">↺</div>
+      <div class="top-btn" onclick="window.open('index.html')" title="Voir le site">↗</div>
+    </div>
+  </header>
+
+  <div class="pg">
+
+    <!-- VUE D'ENSEMBLE -->
+    <div class="pane on" id="pane-overview">
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--accent)"></div><span class="kpi-chip ch-g" id="kpi-u-chip">—</span></div><div class="kpi-val" id="kpi-users">—</div><div class="kpi-lbl">Organisations</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--amber)"></div><span class="kpi-chip ch-a">FCFA</span></div><div class="kpi-val" id="kpi-mrr">—</div><div class="kpi-lbl">MRR estimé</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--sky)"></div><span class="kpi-chip ch-b" id="kpi-m-chip">—</span></div><div class="kpi-val" id="kpi-mandats">—</div><div class="kpi-lbl">Biens créés</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--rose)"></div><span class="kpi-chip ch-r">Alertes</span></div><div class="kpi-val">2</div><div class="kpi-lbl">Alertes système</div></div>
+      </div>
+
+      <div class="alert red"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Quota Twilio épuisé</strong>Les notifications WhatsApp sont désactivées. Rechargez le compte Twilio.</div></div>
+      <div class="alert amber"><div class="alert-icon">💰</div><div class="alert-text"><strong>3 abonnements en attente de paiement</strong>Relancer les utilisateurs concernés.</div></div>
+
+      <div class="g2" style="margin-top:12px">
+        <div class="card">
+          <div class="card-h"><h2>Croissance organisations</h2></div>
+          <div class="bar-r"><span class="bar-m">Jan</span><div class="bar-t"><div class="bar-f g" style="width:20%"></div></div><span class="bar-v">12</span></div>
+          <div class="bar-r"><span class="bar-m">Fév</span><div class="bar-t"><div class="bar-f g" style="width:35%"></div></div><span class="bar-v">22</span></div>
+          <div class="bar-r"><span class="bar-m">Mar</span><div class="bar-t"><div class="bar-f g" style="width:55%"></div></div><span class="bar-v">41</span></div>
+          <div class="bar-r"><span class="bar-m">Avr</span><div class="bar-t"><div class="bar-f" style="width:70%"></div></div><span class="bar-v">67</span></div>
+          <div class="bar-r"><span class="bar-m">Mai</span><div class="bar-t"><div class="bar-f g" style="width:85%"></div></div><span class="bar-v">98</span></div>
+          <div class="bar-r"><span class="bar-m">Jun</span><div class="bar-t"><div class="bar-f" style="width:100%"></div></div><span class="bar-v" id="bar-total">—</span></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Plans actifs</h2></div>
+          <div class="g3" style="margin-bottom:0">
+            <div class="stat-mini"><div class="stat-mini-val" id="p-solo">—</div><div class="stat-mini-lbl">Solo</div></div>
+            <div class="stat-mini"><div class="stat-mini-val" id="p-pro" style="color:var(--accent)">—</div><div class="stat-mini-lbl">Pro</div></div>
+            <div class="stat-mini"><div class="stat-mini-val" id="p-agence" style="color:var(--amber)">—</div><div class="stat-mini-lbl">Agence</div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="card-h" style="margin-bottom:8px"><h2>Activité récente</h2></div>
+            <div id="recent-act"><div class="ld"><span class="spin"></span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UTILISATEURS -->
+    <div class="pane" id="pane-users">
+      <div class="card">
+        <div class="card-h">
+          <h2 id="users-count">Organisations</h2>
+          <div class="search-box"><span style="color:var(--ink3);font-size:.75rem">⌕</span><input type="text" placeholder="Rechercher…" oninput="filterUsers(this.value)"/></div>
+        </div>
+        <div id="users-list"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- ORGANISATIONS -->
+    <div class="pane" id="pane-orgs">
+      <div class="card">
+        <div class="card-h"><h2 id="orgs-count">Organisations</h2></div>
+        <div id="orgs-list"><div class="ld"><span class="spin"></span>Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- REVENUS -->
+    <div class="pane" id="pane-revenue">
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--accent)"></div></div><div class="kpi-val" id="r-mrr">—</div><div class="kpi-lbl">MRR (FCFA)</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--amber)"></div></div><div class="kpi-val" id="r-arr">—</div><div class="kpi-lbl">ARR estimé</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--sky)"></div></div><div class="kpi-val" id="r-pay">—</div><div class="kpi-lbl">Abonnés</div></div>
+        <div class="kpi"><div class="kpi-top"><div class="kpi-dot" style="background:var(--rose)"></div></div><div class="kpi-val">3%</div><div class="kpi-lbl">Churn mensuel</div></div>
+      </div>
+      <div class="g3">
+        <div class="stat-mini" style="padding:16px"><div style="font-size:.6rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">Solo · 15K F</div><div class="stat-mini-val" id="r-solo">—</div></div>
+        <div class="stat-mini" style="padding:16px;border-color:rgba(0,200,117,.15)"><div style="font-size:.6rem;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">Pro · 20K F</div><div class="stat-mini-val" id="r-pro" style="color:var(--accent)">—</div></div>
+        <div class="stat-mini" style="padding:16px;border-color:rgba(245,166,35,.15)"><div style="font-size:.6rem;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem">Agence · 30K F</div><div class="stat-mini-val" id="r-agence" style="color:var(--amber)">—</div></div>
+      </div>
+    </div>
+
+    <!-- ALERTES -->
+    <div class="pane" id="pane-alerts">
+      <div class="card">
+        <div class="card-h"><h2>Alertes système</h2></div>
+        <div class="alert red" style="margin-bottom:8px"><div class="alert-icon">⚠️</div><div class="alert-text"><strong>Quota Twilio épuisé</strong>Les notifications WhatsApp sont désactivées. Action requise : recharger le compte Twilio.</div></div>
+        <div class="alert amber" style="margin-bottom:8px"><div class="alert-icon">💰</div><div class="alert-text"><strong>3 abonnements en attente</strong>Relancer les utilisateurs pour le paiement.</div></div>
+        <div class="alert green"><div class="alert-icon">✅</div><div class="alert-text"><strong>Base de données Supabase opérationnelle</strong>Toutes les tables fonctionnent. Dernière vérification : il y a 5 min.</div></div>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="pane" id="pane-logs">
+      <div class="card">
+        <div class="card-h"><h2>Logs d'activité</h2></div>
+        <div class="log-row"><div class="log-dot" style="background:var(--accent)"></div><div class="log-msg">Nouvelle inscription — teranga-immo</div><span class="log-time">Il y a 2 min</span></div>
+        <div class="log-row"><div class="log-dot" style="background:var(--sky)"></div><div class="log-msg">Bien créé — Villa Almadies 78M FCFA</div><span class="log-time">Il y a 18 min</span></div>
+        <div class="log-row"><div class="log-dot" style="background:var(--rose)"></div><div class="log-msg">Quota Twilio épuisé — notifications désactivées</div><span class="log-time">Il y a 1h</span></div>
+        <div class="log-row"><div class="log-dot" style="background:var(--amber)"></div><div class="log-msg">Connexion admin — admin@proplio.sn</div><span class="log-time">Il y a 2h</span></div>
+        <div class="log-row"><div class="log-dot" style="background:var(--accent)"></div><div class="log-msg">Paiement reçu — Plan Pro · 20 000 FCFA</div><span class="log-time">Il y a 3h</span></div>
+        <div class="log-row"><div class="log-dot" style="background:var(--accent)"></div><div class="log-msg">Nouvelle inscription — dakar-immo</div><span class="log-time">Il y a 5h</span></div>
+      </div>
+    </div>
+
+    <!-- PARAMÈTRES -->
+    <div class="pane" id="pane-settings">
+      <div class="g2">
+        <div class="card">
+          <div class="card-h"><h2>Configuration générale</h2></div>
+          <div class="setting-row"><div><div class="setting-name">Mode maintenance</div><div class="setting-sub">Afficher une page de maintenance</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+          <div class="setting-row"><div><div class="setting-name">Inscriptions ouvertes</div><div class="setting-sub">Permettre de nouveaux comptes</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="setting-row"><div><div class="setting-name">Notifications WhatsApp</div><div class="setting-sub">Via Twilio (quota épuisé)</div></div><span class="badge b-r">Inactif</span></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Accès admin</h2></div>
+          <div style="font-size:.73rem;color:var(--ink2);margin-bottom:1rem;line-height:1.7">
+            Email : <span style="color:var(--ink);font-weight:500">admin@proplio.sn</span><br/>
+            Mot de passe : <span style="color:var(--ink);font-weight:500">ProplioAdmin2026!</span><br/>
+            Code 2FA : <span style="color:var(--accent);font-weight:500">123456</span>
+          </div>
+          <div class="alert red" style="margin:0"><div class="alert-icon">⚠️</div><div class="alert-text" style="font-size:.68rem"><strong>Changez ces identifiants en production</strong></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-t"></span></div>
+
+<script>
+// AUTH
+(function(){
+  const ok=localStorage.getItem('proplio_admin')==='true'
+  const ts=Number(localStorage.getItem('proplio_admin_ts')||0)
+  if(!ok||Date.now()-ts>4*60*60*1000){localStorage.removeItem('proplio_admin');location.href='admin-login.html'}
+})()
+function doOut(){localStorage.removeItem('proplio_admin');localStorage.removeItem('proplio_admin_ts');location.href='admin-login.html'}
+
+// SUPABASE
+const DB='https://nkpzcleluygjzqetwlju.supabase.co'
+const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5rcHpjbGVsdXlnanpxZXR3bGp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MzEwMDcsImV4cCI6MjA5NzMwNzAwN30.1EIsbsa9NP7H4zRtAsMIqtF9z8FgkdLdnGpGtVoISg4'
+const H={'apikey':K,'Authorization':'Bearer '+K}
+
+async function q(table,qs=''){
+  const r=await fetch(`${DB}/rest/v1/${table}${qs}`,{headers:H})
+  if(!r.ok)throw new Error(await r.text())
+  return r.json()
+}
+
+let DATA={orgs:[],mandats:[],contacts:[]}
+const PAGES={overview:'Vue d\'ensemble',users:'Utilisateurs',orgs:'Organisations',revenue:'Revenus',alerts:'Alertes',logs:'Logs',settings:'Paramètres'}
+
+function go(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'))
+  document.getElementById('pane-'+id).classList.add('on')
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'))
+  if(el)el.classList.add('on')
+  document.getElementById('pg-h').textContent=PAGES[id]||id
+  document.getElementById('pg-sub').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+' — Admin Panel'
+}
+
+async function loadData(){
+  try{
+    const [orgs,mandats,contacts]=await Promise.all([
+      q('organizations','?select=id,name,plan,slug,ville,created_at&order=created_at.desc'),
+      q('mandats','?select=id,status,prix_fcfa'),
+      q('contacts','?select=id,score,type'),
+    ])
+    DATA={orgs,mandats,contacts}
+    renderAll()
+    toast('✓ Données actualisées')
+  }catch(e){toast('Erreur: '+e.message)}
+}
+
+function renderAll(){rOverview();rUsers();rOrgs();rRevenue()}
+
+function rOverview(){
+  const solo=DATA.orgs.filter(o=>o.plan==='SOLO').length
+  const pro=DATA.orgs.filter(o=>o.plan==='PRO').length
+  const agence=DATA.orgs.filter(o=>o.plan==='AGENCE').length
+  const mrr=solo*15000+pro*20000+agence*30000
+  set('kpi-users',DATA.orgs.length)
+  set('kpi-mrr',mrr>0?(mrr/1000).toFixed(0)+'K':'0')
+  set('kpi-mandats',DATA.mandats.length)
+  set('kpi-u-chip',DATA.orgs.length+' total')
+  set('kpi-m-chip',DATA.mandats.length+' total')
+  set('bar-total',DATA.orgs.length)
+  set('pill-users',DATA.orgs.length)
+  set('p-solo',solo);set('p-pro',pro);set('p-agence',agence)
+
+  const ra=document.getElementById('recent-act')
+  ra.innerHTML=!DATA.orgs.length?'<div class="empty">Aucune organisation</div>'
+    :DATA.orgs.slice(0,5).map(o=>`
+      <div class="log-row">
+        <div class="log-dot" style="background:var(--accent)"></div>
+        <div class="log-msg">${o.name}</div>
+        <span class="badge ${planCls(o.plan)}">${o.plan}</span>
+      </div>`).join('')
+}
+
+function rUsers(){
+  set('users-count',`Organisations (${DATA.orgs.length})`)
+  const el=document.getElementById('users-list')
+  el.innerHTML=!DATA.orgs.length?'<div class="empty">Aucune organisation</div>'
+    :`<table class="tbl">
+      <thead><tr><th>Organisation</th><th>Ville</th><th>Plan</th><th>Date</th></tr></thead>
+      <tbody>${DATA.orgs.map(o=>`
+        <tr><td>${o.name}</td><td>${o.ville||'—'}</td>
+        <td><span class="badge ${planCls(o.plan)}">${o.plan}</span></td>
+        <td style="color:var(--ink3);font-size:.68rem">${new Date(o.created_at).toLocaleDateString('fr-FR')}</td></tr>`).join('')}
+      </tbody></table>`
+}
+
+function filterUsers(q){
+  const ql=q.toLowerCase()
+  document.querySelectorAll('#users-list tr:not(:first-child)').forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(ql)?'':'none'
+  })
+}
+
+function rOrgs(){
+  set('orgs-count',`Organisations (${DATA.orgs.length})`)
+  document.getElementById('orgs-list').innerHTML=!DATA.orgs.length?'<div class="empty">Aucune organisation</div>'
+    :`<table class="tbl">
+      <thead><tr><th>Nom</th><th>Slug</th><th>Plan</th><th>Ville</th></tr></thead>
+      <tbody>${DATA.orgs.map(o=>`
+        <tr><td>${o.name}</td>
+        <td style="font-size:.65rem;color:var(--ink3)">${o.slug}</td>
+        <td><span class="badge ${planCls(o.plan)}">${o.plan}</span></td>
+        <td>${o.ville||'—'}</td></tr>`).join('')}
+      </tbody></table>`
+}
+
+function rRevenue(){
+  const solo=DATA.orgs.filter(o=>o.plan==='SOLO').length
+  const pro=DATA.orgs.filter(o=>o.plan==='PRO').length
+  const agence=DATA.orgs.filter(o=>o.plan==='AGENCE').length
+  const mrr=solo*15000+pro*20000+agence*30000
+  set('r-mrr',(mrr/1000).toFixed(0)+'K F')
+  set('r-arr',(mrr*12/1000000).toFixed(1)+'M F')
+  set('r-pay',DATA.orgs.length)
+  set('r-solo',(solo*15000/1000).toFixed(0)+'K F')
+  set('r-pro',(pro*20000/1000).toFixed(0)+'K F')
+  set('r-agence',(agence*30000/1000).toFixed(0)+'K F')
+}
+
+const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v}
+function planCls(p){return p==='PRO'?'b-g':p==='AGENCE'?'b-a':'b-n'}
+function toast(msg){
+  const t=document.getElementById('toast')
+  document.getElementById('toast-t').textContent=msg
+  t.classList.add('on')
+  clearTimeout(t._t)
+  t._t=setTimeout(()=>t.classList.remove('on'),3000)
+}
+
+go('overview',document.querySelector('.nav-btn.on'))
+loadData()
+</script>
+</body>
+</html>
